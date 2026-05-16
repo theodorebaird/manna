@@ -94,7 +94,7 @@ function ReviewSession({ cards }: { cards: MemoryCard[] }) {
         <div className="verse-text italic whitespace-pre-wrap">{card.stage === 1 || revealed ? card.text : masked}</div>
         {card.stage === 1 ? (
           <div className="text-xs text-ink-500 dark:text-ink-300/70 italic">
-            Stage 1: read along. Grade <strong>Good</strong> or <strong>Easy</strong> to unlock blanking on the next review.
+            <strong>Stage 1 of 4 — Read along.</strong> The whole verse is shown so you can learn it. Tap <strong>Good</strong> or <strong>Easy</strong> below when you've read it carefully; next time this verse comes up, some words will be hidden to test your memory.
           </div>
         ) : (
           <button onClick={() => setRevealed(r => !r)} className="btn-ghost self-start">
