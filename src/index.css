@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-gold-50 text-ink-800 font-sans antialiased;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    background-image:
+      radial-gradient(at 0% 0%, rgba(252, 211, 77, 0.18) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(217, 119, 6, 0.12) 0px, transparent 50%);
+    background-attachment: fixed;
+  }
+  html.dark body {
+    @apply bg-ink-900 text-ink-100;
+    background-image:
+      radial-gradient(at 0% 0%, rgba(180, 83, 9, 0.18) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(120, 53, 15, 0.16) 0px, transparent 50%);
+  }
+  h1, h2, h3 {
+    @apply font-serif text-gold-700 dark:text-gold-300;
+  }
+  ::selection {
+    @apply bg-gold-300 text-ink-900;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white/85 dark:bg-ink-800/85 backdrop-blur rounded-2xl shadow-soft p-5 border border-gold-100 dark:border-ink-700;
+  }
+  .card-tight {
+    @apply bg-white/85 dark:bg-ink-800/85 backdrop-blur rounded-xl shadow-soft p-3 border border-gold-100 dark:border-ink-700;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full font-semibold text-white bg-gradient-to-r from-gold-500 to-gold-600 shadow-soft active:scale-95 transition disabled:opacity-50 disabled:active:scale-100;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full font-medium text-gold-700 dark:text-gold-300 hover:bg-gold-50 dark:hover:bg-ink-800 transition;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full font-medium text-ink-800 dark:text-ink-100 border border-gold-200 dark:border-ink-600 hover:bg-gold-50 dark:hover:bg-ink-700 transition;
+  }
+  .chip {
+    @apply inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium border border-gold-200 dark:border-ink-600 text-ink-800 dark:text-ink-100 bg-white/70 dark:bg-ink-800/70 select-none cursor-pointer transition;
+  }
+  .chip-active {
+    @apply bg-gold-500 text-white border-gold-500;
+  }
+  .verse-text {
+    @apply font-serif text-lg leading-relaxed text-ink-800 dark:text-ink-100;
+  }
+  .verse-num {
+    @apply text-xs font-sans font-semibold text-gold-600 dark:text-gold-400 align-super mr-1 select-none;
+  }
+  .input {
+    @apply w-full px-4 py-3 rounded-xl border border-gold-200 dark:border-ink-600 bg-white dark:bg-ink-800 text-ink-800 dark:text-ink-100 placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-gold-400;
+  }
+  .page-title {
+    @apply font-serif text-3xl font-semibold text-gold-700 dark:text-gold-300 mb-2;
+  }
+  .section-label {
+    @apply text-xs font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-300;
+  }
+  .gold-divider {
+    @apply h-px bg-gradient-to-r from-transparent via-gold-300 dark:via-gold-700 to-transparent;
+  }
+}

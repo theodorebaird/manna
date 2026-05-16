@@ -1,0 +1,51 @@
+[
+  {
+    "id": "ane-cosmology",
+    "title": "How ancient peoples saw the cosmos",
+    "refs": ["Genesis 1"],
+    "body": "Ancient Near Eastern cultures pictured the world as a flat disk under a solid dome (the 'firmament') with waters above and below. Other creation accounts from the region — like the Babylonian Enuma Elish — describe creation as a battle between gods. Genesis stands apart by depicting a single God who creates by word, calls it 'good,' and gives humanity dignity as His image-bearers. It addresses the same cosmic questions but reframes the answer entirely.",
+    "sources": ["Walton, The Lost World of Genesis One", "ANET texts"]
+  },
+  {
+    "id": "abraham-ur",
+    "title": "Abraham's world: Ur and the long road to Canaan",
+    "refs": ["Genesis 12"],
+    "body": "Ur of the Chaldees was a major Sumerian city near the Persian Gulf, prosperous around 2000 BC. Abraham's family migrated north to Haran, then south through the Levant. The promise that he would father 'a great nation' was extraordinary — he was 75, childless, and leaving a sophisticated urban culture for a pastoral life among Canaanite city-states.",
+    "sources": ["Kitchen, On the Reliability of the Old Testament"]
+  },
+  {
+    "id": "exodus-egypt",
+    "title": "Slavery in Egypt and the plagues",
+    "refs": ["Exodus 1", "Exodus 7", "Exodus 12"],
+    "body": "Egypt of the New Kingdom (roughly 1500–1200 BC) used Semitic labor extensively in store-cities and brick-making. The ten plagues each strike at an Egyptian deity: the Nile (Hapi), darkness (Ra the sun-god), and finally the firstborn (linking to Pharaoh, the 'son of Ra'). The Passover is both deliverance and a theological argument that Yahweh outranks every Egyptian power.",
+    "sources": ["Hoffmeier, Israel in Egypt"]
+  },
+  {
+    "id": "david-jerusalem",
+    "title": "Why David took Jerusalem",
+    "refs": ["2 Samuel 5"],
+    "body": "Jerusalem (Jebus) was a Jebusite stronghold on a ridge between Judah and the northern tribes — geographically neutral, militarily strong, and outside any tribal allotment. By capturing it around 1000 BC, David picked a capital that no tribe could claim as theirs, unifying the kingdom. He then brought the ark there, joining political and religious centers.",
+    "sources": ["Provan/Long/Longman, A Biblical History of Israel"]
+  },
+  {
+    "id": "exile-babylon",
+    "title": "Exile in Babylon and how the prophets read it",
+    "refs": ["Daniel 1", "Ezekiel 1"],
+    "body": "Babylon under Nebuchadnezzar deported Judah's elite in three waves (605, 597, 586 BC), destroying the Temple in 586. Far from being random punishment, prophets like Jeremiah and Ezekiel framed the exile as covenant consequence — and also covenant continuation. Out of exile came the synagogue, the codification of scripture, and a hope of return that shaped the rest of Jewish history.",
+    "sources": ["Wright, The New Testament and the People of God, ch. 6"]
+  },
+  {
+    "id": "second-temple",
+    "title": "The world Jesus was born into",
+    "refs": ["Matthew 1", "Luke 2"],
+    "body": "First-century Judea was an occupied province under Rome, with Herod the Great's rebuilt Temple as its religious center. Multiple Jewish groups competed for the future: Pharisees pursued holiness through Torah, Sadducees ran the Temple, Essenes withdrew to the desert, Zealots plotted revolution. Into this charged setting Jesus was born — and his teaching answered each group's hope differently than any of them expected.",
+    "sources": ["Wright, Jesus and the Victory of God"]
+  },
+  {
+    "id": "pauls-roads",
+    "title": "Roman roads and the spread of the gospel",
+    "refs": ["Acts 13", "Acts 16"],
+    "body": "Pax Romana gave the first-century church an unprecedented infrastructure: paved roads from Britain to the Euphrates, a single trade language (Koine Greek), and shipping lanes across the Mediterranean. Paul's missionary journeys followed these roads, planting churches in commercial hubs (Corinth, Ephesus, Thessalonica) that then radiated influence outward. The gospel went viral on Roman infrastructure.",
+    "sources": ["Meeks, The First Urban Christians"]
+  }
+]

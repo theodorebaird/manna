@@ -1,0 +1,44 @@
+[
+  {
+    "id": "messiah-bethlehem",
+    "title": "Born in Bethlehem",
+    "prediction": { "ref": "Micah 5:2", "text": "But thou, Bethlehem Ephratah, though thou be little among the thousands of Judah, yet out of thee shall he come forth unto me that is to be ruler in Israel; whose goings forth have been from of old, from everlasting." },
+    "fulfillment": { "ref": "Matthew 2:1", "text": "Now when Jesus was born in Bethlehem of Judaea in the days of Herod the king, behold, there came wise men from the east to Jerusalem." },
+    "notes": "Micah wrote roughly 700 years before Jesus was born. Bethlehem was a tiny village, but the prophet specifies it by name — and by the qualifier 'Ephratah' to distinguish it from another Bethlehem in Zebulun."
+  },
+  {
+    "id": "messiah-virgin",
+    "title": "Born of a virgin",
+    "prediction": { "ref": "Isaiah 7:14", "text": "Therefore the Lord himself shall give you a sign; Behold, a virgin shall conceive, and bear a son, and shall call his name Immanuel." },
+    "fulfillment": { "ref": "Matthew 1:22-23", "text": "Now all this was done, that it might be fulfilled which was spoken of the Lord by the prophet, saying, Behold, a virgin shall be with child, and shall bring forth a son, and they shall call his name Emmanuel, which being interpreted is, God with us." },
+    "notes": "Matthew explicitly cites Isaiah's sign as fulfilled in Jesus. The Hebrew almah and the Greek parthenos both carry the sense of a young woman of marriageable age, with parthenos in the LXX clearly meaning virgin."
+  },
+  {
+    "id": "messiah-suffering",
+    "title": "The suffering servant",
+    "prediction": { "ref": "Isaiah 53:5", "text": "But he was wounded for our transgressions, he was bruised for our iniquities: the chastisement of our peace was upon him; and with his stripes we are healed." },
+    "fulfillment": { "ref": "1 Peter 2:24", "text": "Who his own self bare our sins in his own body on the tree, that we, being dead to sins, should live unto righteousness: by whose stripes ye were healed." },
+    "notes": "Isaiah 53 is one of the most striking pre-Christian descriptions of substitutionary atonement. Peter quotes it almost verbatim and applies it directly to Jesus' crucifixion, written 700+ years after Isaiah."
+  },
+  {
+    "id": "messiah-pierced",
+    "title": "Pierced hands and feet",
+    "prediction": { "ref": "Psalm 22:16", "text": "For dogs have compassed me: the assembly of the wicked have inclosed me: they pierced my hands and my feet." },
+    "fulfillment": { "ref": "John 19:18", "text": "Where they crucified him, and two other with him, on either side one, and Jesus in the midst." },
+    "notes": "Psalm 22 was written by David around 1000 BC, centuries before crucifixion was invented as a Roman execution method. Its details — pierced hands and feet, garments divided by lot, mockery from onlookers — read like an eyewitness account of the cross."
+  },
+  {
+    "id": "messiah-resurrection",
+    "title": "Not abandoned to the grave",
+    "prediction": { "ref": "Psalm 16:10", "text": "For thou wilt not leave my soul in hell; neither wilt thou suffer thine Holy One to see corruption." },
+    "fulfillment": { "ref": "Acts 2:31", "text": "He seeing this before spake of the resurrection of Christ, that his soul was not left in hell, neither his flesh did see corruption." },
+    "notes": "Peter's Pentecost sermon quotes Psalm 16 to argue that David was speaking prophetically about the Messiah's resurrection, since David himself died and was buried, but the Messiah did not see corruption."
+  },
+  {
+    "id": "kingdom-stone",
+    "title": "The kingdom that crushes all others",
+    "prediction": { "ref": "Daniel 2:44", "text": "And in the days of these kings shall the God of heaven set up a kingdom, which shall never be destroyed: and the kingdom shall not be left to other people, but it shall break in pieces and consume all these kingdoms, and it shall stand for ever." },
+    "fulfillment": { "ref": "Luke 1:33", "text": "And he shall reign over the house of Jacob for ever; and of his kingdom there shall be no end." },
+    "notes": "Daniel's vision of four kingdoms (Babylonian, Persian, Greek, Roman) ends with an everlasting kingdom established 'in the days of these kings.' Jesus was born and ministered during the Roman empire — the fourth kingdom in Daniel's sequence."
+  }
+]

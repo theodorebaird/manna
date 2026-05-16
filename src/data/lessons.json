@@ -1,0 +1,737 @@
+{
+  "units": [
+    {
+      "id": "u1-beginnings",
+      "title": "Creation & Beginnings",
+      "subtitle": "Unit 1 · Genesis 1–11",
+      "skills": [
+        {
+          "id": "s1-creation",
+          "title": "In the Beginning",
+          "icon": "sun",
+          "lessons": [
+            {
+              "id": "l1-1-read",
+              "type": "read",
+              "title": "Read Genesis 1:1–13",
+              "ref": "Genesis 1:1-13",
+              "reflectPrompt": "What does it mean that God called the light 'good' before there was anyone to see it? What does that say about how God works?"
+            },
+            {
+              "id": "l1-2-quiz",
+              "type": "quiz",
+              "title": "Day-by-day quiz",
+              "questions": [
+                {
+                  "kind": "mc",
+                  "prompt": "On which day did God create light?",
+                  "options": ["Day 1", "Day 2", "Day 3", "Day 4"],
+                  "answerIndex": 0,
+                  "explain": "Light comes on Day 1; the sun, moon, and stars not until Day 4 — a deliberate order."
+                },
+                {
+                  "kind": "mc",
+                  "prompt": "What did God create on the sixth day?",
+                  "options": ["Sea creatures", "Plants", "Land animals and humanity", "Sun and moon"],
+                  "answerIndex": 2,
+                  "explain": "Land animals and then humanity — male and female in God's image."
+                },
+                {
+                  "kind": "fill",
+                  "prompt": "Complete: 'In the beginning God created the ____ and the earth.'",
+                  "answer": "heaven"
+                },
+                {
+                  "kind": "mc",
+                  "prompt": "What did God do on the seventh day?",
+                  "options": ["Created angels", "Rested", "Spoke to Adam", "Made a covenant"],
+                  "answerIndex": 1,
+                  "explain": "He rested and blessed the seventh day, setting the pattern of Sabbath."
+                }
+              ]
+            },
+            {
+              "id": "l1-3-history",
+              "type": "history",
+              "title": "Ancient cosmology context",
+              "cardId": "ane-cosmology",
+              "checkQuestion": {
+                "kind": "mc",
+                "prompt": "What sets Genesis apart from other ancient creation accounts?",
+                "options": [
+                  "It is the oldest",
+                  "It describes creation as a battle between gods",
+                  "One God creates by word and calls it good",
+                  "It includes a flood narrative"
+                ],
+                "answerIndex": 2,
+                "explain": "Genesis depicts a single God speaking creation into being and pronouncing it good — a sharp contrast to violent creation myths of the region."
+              }
+            },
+            {
+              "id": "l1-4-memorize",
+              "type": "memorize",
+              "title": "Memorize Genesis 1:1",
+              "ref": "Genesis 1:1",
+              "text": "In the beginning God created the heaven and the earth."
+            }
+          ]
+        },
+        {
+          "id": "s2-image",
+          "title": "Made in His Image",
+          "icon": "sparkles",
+          "lessons": [
+            {
+              "id": "l2-1-read",
+              "type": "read",
+              "title": "Read Genesis 1:26–2:3",
+              "ref": "Genesis 1:26-31",
+              "reflectPrompt": "What does it mean to be made in the image of God? How might that shape how you see other people?"
+            },
+            {
+              "id": "l2-2-quiz",
+              "type": "quiz",
+              "title": "Image of God quiz",
+              "questions": [
+                {
+                  "kind": "mc",
+                  "prompt": "In whose image was humanity made?",
+                  "options": ["The angels", "God's", "Adam's", "The animals'"],
+                  "answerIndex": 1
+                },
+                {
+                  "kind": "mc",
+                  "prompt": "What dominion was given to humanity?",
+                  "options": ["Over other people", "Over the angels", "Over fish, fowl, and every living thing", "Over the heavens"],
+                  "answerIndex": 2
+                },
+                {
+                  "kind": "fill",
+                  "prompt": "'So God created man in his own ____'",
+                  "answer": "image"
+                }
+              ]
+            },
+            {
+              "id": "l2-3-read",
+              "type": "read",
+              "title": "Read Genesis 2:7–25",
+              "ref": "Genesis 2:7-25",
+              "reflectPrompt": "How does God's care in shaping Adam and Eve contrast with the broad strokes of Genesis 1?"
+            }
+          ]
+        },
+        {
+          "id": "s3-fall",
+          "title": "The Fall",
+          "icon": "mountain",
+          "lessons": [
+            {
+              "id": "l3-1-read",
+              "type": "read",
+              "title": "Read Genesis 3",
+              "ref": "Genesis 3:1-15",
+              "reflectPrompt": "Where does the serpent's deception begin — with the action, or with how Eve sees God? What's the pattern?"
+            },
+            {
+              "id": "l3-2-quiz",
+              "type": "quiz",
+              "title": "The Fall quiz",
+              "questions": [
+                {
+                  "kind": "mc",
+                  "prompt": "What did the serpent say would happen if Eve ate the fruit?",
+                  "options": ["She would die", "Her eyes would be opened and she'd be as gods", "She would become wise", "She would have to leave the garden"],
+                  "answerIndex": 1
+                },
+                {
+                  "kind": "mc",
+                  "prompt": "Who is the 'seed' in Genesis 3:15 that will bruise the serpent's head?",
+                  "options": ["Cain", "Abel", "A future descendant — traditionally read as the Messiah", "Adam himself"],
+                  "answerIndex": 2,
+                  "explain": "Genesis 3:15 is often called the protoevangelium — the first hint of the gospel."
+                },
+                {
+                  "kind": "order",
+                  "prompt": "Put these events in order:",
+                  "items": [
+                    "Serpent questions God's word",
+                    "Eve eats the fruit and gives to Adam",
+                    "Their eyes are opened and they hide",
+                    "God pronounces judgment and the promise of a seed"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s4-flood",
+          "title": "Noah & the Flood",
+          "icon": "anchor",
+          "lessons": [
+            {
+              "id": "l4-1-read",
+              "type": "read",
+              "title": "Read Genesis 6:5–22",
+              "ref": "Genesis 6:5-22",
+              "reflectPrompt": "What did Noah find that the rest of the world did not? What does that suggest about how God evaluates a generation?"
+            },
+            {
+              "id": "l4-2-quiz",
+              "type": "quiz",
+              "title": "Flood quiz",
+              "questions": [
+                {
+                  "kind": "mc",
+                  "prompt": "How many of each clean animal did Noah take into the ark?",
+                  "options": ["One pair", "Two pairs", "Seven pairs", "Whatever fit"],
+                  "answerIndex": 2,
+                  "explain": "Genesis 7:2 — by sevens of clean beasts, by twos of unclean."
+                },
+                {
+                  "kind": "mc",
+                  "prompt": "What sign did God give as a covenant after the flood?",
+                  "options": ["A star", "A rainbow", "A dove", "An altar"],
+                  "answerIndex": 1
+                },
+                {
+                  "kind": "fill",
+                  "prompt": "'And Noah found ____ in the eyes of the LORD.'",
+                  "answer": "grace"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u2-patriarchs",
+      "title": "The Patriarchs",
+      "subtitle": "Unit 2 · Abraham to Joseph",
+      "skills": [
+        {
+          "id": "s5-abraham",
+          "title": "Abraham's Call",
+          "icon": "compass",
+          "lessons": [
+            {
+              "id": "l5-1-read",
+              "type": "read",
+              "title": "Read Genesis 12:1–9",
+              "ref": "Genesis 12:1-9",
+              "reflectPrompt": "What did Abraham have to leave behind? What was he promised in exchange?"
+            },
+            {
+              "id": "l5-2-history",
+              "type": "history",
+              "title": "Abraham's world",
+              "cardId": "abraham-ur",
+              "checkQuestion": {
+                "kind": "mc",
+                "prompt": "What was Ur of the Chaldees?",
+                "options": ["A nomadic camp", "A major Sumerian city", "A desert oasis", "An Egyptian colony"],
+                "answerIndex": 1
+              }
+            },
+            {
+              "id": "l5-3-quiz",
+              "type": "quiz",
+              "title": "Abraham quiz",
+              "questions": [
+                {
+                  "kind": "mc",
+                  "prompt": "How old was Abraham when God called him?",
+                  "options": ["50", "65", "75", "100"],
+                  "answerIndex": 2
+                },
+                {
+                  "kind": "mc",
+                  "prompt": "What was God's promise to Abraham?",
+                  "options": ["Wealth", "A great nation through him", "Long life", "An army"],
+                  "answerIndex": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s6-isaac",
+          "title": "Isaac & the Sacrifice",
+          "icon": "flame",
+          "lessons": [
+            {
+              "id": "l6-1-read",
+              "type": "read",
+              "title": "Read Genesis 22:1–14",
+              "ref": "Genesis 22:1-14",
+              "reflectPrompt": "What does Abraham's willingness reveal about his trust in God? What does the substitute ram foreshadow?"
+            },
+            {
+              "id": "l6-2-quiz",
+              "type": "quiz",
+              "title": "Isaac quiz",
+              "questions": [
+                {
+                  "kind": "mc",
+                  "prompt": "What did God provide in place of Isaac?",
+                  "options": ["A goat", "A ram caught in the thicket", "An angel", "Nothing — Isaac was sacrificed"],
+                  "answerIndex": 1
+                },
+                {
+                  "kind": "fill",
+                  "prompt": "Abraham called the place 'Jehovahjireh' — meaning 'the LORD will ____'.",
+                  "answer": "provide"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "s7-joseph",
+          "title": "Joseph in Egypt",
+          "icon": "star",
+          "lessons": [
+            {
+              "id": "l7-1-read",
+              "type": "read",
+              "title": "Read Genesis 50:15–21",
+              "ref": "Genesis 50:15-21",
+              "reflectPrompt": "'Ye thought evil against me; but God meant it unto good.' How does Joseph's perspective on suffering reframe his story?"
+            },
+            {
+              "id": "l7-2-quiz",
+              "type": "quiz",
+              "title": "Joseph quiz",
+              "questions": [
+                {
+                  "kind": "mc",
+                  "prompt": "What did Joseph's brothers do to him?",
+                  "options": ["Killed him", "Sold him into slavery in Egypt", "Banished him to the desert", "Forgave him"],
+                  "answerIndex": 1
+                },
+                {
+                  "kind": "mc",
+                  "prompt": "What position did Joseph eventually hold?",
+                  "options": ["A priest", "Second only to Pharaoh", "A scribe", "Captain of the guard"],
+                  "answerIndex": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u3-exodus",
+      "title": "The Exodus",
+      "subtitle": "Unit 3 · Out of Egypt",
+      "skills": [
+        {
+          "id": "s8-moses",
+          "title": "Moses & the Burning Bush",
+          "icon": "flame",
+          "lessons": [
+            {
+              "id": "l8-1-read",
+              "type": "read",
+              "title": "Read Exodus 3:1–14",
+              "ref": "Exodus 3:1-14",
+              "reflectPrompt": "What name does God give Himself, and why does it matter that He defines Himself this way?"
+            },
+            {
+              "id": "l8-2-history",
+              "type": "history",
+              "title": "Egypt and the plagues",
+              "cardId": "exodus-egypt",
+              "checkQuestion": {
+                "kind": "mc",
+                "prompt": "Each plague was a strike against what?",
+                "options": ["A specific Egyptian deity", "Random crops", "Egyptian children", "Pharaoh's army"],
+                "answerIndex": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "s9-passover",
+          "title": "Passover & Red Sea",
+          "icon": "anchor",
+          "lessons": [
+            {
+              "id": "l9-1-read",
+              "type": "read",
+              "title": "Read Exodus 12:1–14",
+              "ref": "Exodus 12:1-14",
+              "reflectPrompt": "Why does God establish a memorial meal? What does it teach about how He wants His people to remember?"
+            },
+            {
+              "id": "l9-2-quiz",
+              "type": "quiz",
+              "title": "Exodus quiz",
+              "questions": [
+                {
+                  "kind": "mc",
+                  "prompt": "What sign protected Israelite homes during the final plague?",
+                  "options": ["A lamp in the window", "Blood on the doorposts", "A white flag", "Closed shutters"],
+                  "answerIndex": 1
+                },
+                {
+                  "kind": "mc",
+                  "prompt": "How did Israel cross the Red Sea?",
+                  "options": ["On boats", "God parted the waters", "A bridge appeared", "They went around it"],
+                  "answerIndex": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u4-conquest",
+      "title": "Promised Land & Judges",
+      "subtitle": "Unit 4 · Joshua, Judges, Ruth",
+      "skills": [
+        {
+          "id": "s10-jericho",
+          "title": "Jericho Falls",
+          "icon": "mountain",
+          "lessons": [
+            {
+              "id": "l10-1-read",
+              "type": "read",
+              "title": "Read Joshua 6:1–20",
+              "ref": "Joshua 6:1-20",
+              "reflectPrompt": "What was God teaching Israel by making them march in silence for six days?"
+            },
+            {
+              "id": "l10-2-memorize",
+              "type": "memorize",
+              "title": "Memorize Joshua 1:9",
+              "ref": "Joshua 1:9",
+              "text": "Have not I commanded thee? Be strong and of a good courage; be not afraid, neither be thou dismayed: for the LORD thy God is with thee whithersoever thou goest."
+            }
+          ]
+        },
+        {
+          "id": "s11-ruth",
+          "title": "Ruth's Loyalty",
+          "icon": "star",
+          "lessons": [
+            {
+              "id": "l11-1-read",
+              "type": "read",
+              "title": "Read Ruth 1:8–18",
+              "ref": "Ruth 1:8-18",
+              "reflectPrompt": "Why does Ruth's choice to follow Naomi matter for the story of redemption?"
+            },
+            {
+              "id": "l11-2-quiz",
+              "type": "quiz",
+              "title": "Ruth quiz",
+              "questions": [
+                {
+                  "kind": "mc",
+                  "prompt": "Who was Ruth's great-grandson?",
+                  "options": ["Solomon", "Samson", "King David", "Saul"],
+                  "answerIndex": 2,
+                  "explain": "Ruth's loyalty places her in the genealogy of David — and ultimately Jesus."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u5-kings-prophets",
+      "title": "Kings & Prophets",
+      "subtitle": "Unit 5 · From David to the Exile",
+      "skills": [
+        {
+          "id": "s12-david",
+          "title": "David, the Shepherd King",
+          "icon": "crown",
+          "lessons": [
+            {
+              "id": "l12-1-read",
+              "type": "read",
+              "title": "Read 1 Samuel 17:32–50",
+              "ref": "1 Samuel 17:32-50",
+              "reflectPrompt": "What made David confident against Goliath? What does that teach about whose fight it really was?"
+            },
+            {
+              "id": "l12-2-history",
+              "type": "history",
+              "title": "Why David chose Jerusalem",
+              "cardId": "david-jerusalem",
+              "checkQuestion": {
+                "kind": "mc",
+                "prompt": "Why was Jerusalem strategic as a capital?",
+                "options": [
+                  "It was the largest city",
+                  "It was geographically neutral and outside any tribe",
+                  "It had the best soil",
+                  "It was where Abraham lived"
+                ],
+                "answerIndex": 1
+              }
+            },
+            {
+              "id": "l12-3-memorize",
+              "type": "memorize",
+              "title": "Memorize Psalm 23:1",
+              "ref": "Psalm 23:1",
+              "text": "The LORD is my shepherd; I shall not want."
+            }
+          ]
+        },
+        {
+          "id": "s13-prophecy",
+          "title": "The Servant Foretold",
+          "icon": "scroll",
+          "lessons": [
+            {
+              "id": "l13-1-prophecy",
+              "type": "prophecy",
+              "title": "The Suffering Servant",
+              "cardId": "messiah-suffering"
+            },
+            {
+              "id": "l13-2-prophecy",
+              "type": "prophecy",
+              "title": "Born in Bethlehem",
+              "cardId": "messiah-bethlehem"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u6-exile",
+      "title": "Exile & Return",
+      "subtitle": "Unit 6 · Daniel, Ezra, Nehemiah",
+      "skills": [
+        {
+          "id": "s14-daniel",
+          "title": "Daniel in Babylon",
+          "icon": "scroll",
+          "lessons": [
+            {
+              "id": "l14-1-read",
+              "type": "read",
+              "title": "Read Daniel 1:8–17",
+              "ref": "Daniel 1:8-17",
+              "reflectPrompt": "Daniel 'purposed in his heart' before pressure arrived. What does that teach about preparation?"
+            },
+            {
+              "id": "l14-2-history",
+              "type": "history",
+              "title": "How the prophets read exile",
+              "cardId": "exile-babylon",
+              "checkQuestion": {
+                "kind": "mc",
+                "prompt": "When did Babylon destroy the Temple?",
+                "options": ["605 BC", "586 BC", "538 BC", "70 AD"],
+                "answerIndex": 1
+              }
+            },
+            {
+              "id": "l14-3-prophecy",
+              "type": "prophecy",
+              "title": "The kingdom that never ends",
+              "cardId": "kingdom-stone"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u7-gospels",
+      "title": "The Gospels",
+      "subtitle": "Unit 7 · Jesus the Christ",
+      "skills": [
+        {
+          "id": "s15-incarnation",
+          "title": "The Word Made Flesh",
+          "icon": "cross",
+          "lessons": [
+            {
+              "id": "l15-1-read",
+              "type": "read",
+              "title": "Read John 1:1–14",
+              "ref": "John 1:1-14",
+              "reflectPrompt": "What does it mean that the Word was both 'with God' and 'was God'? How does v.14 change everything?"
+            },
+            {
+              "id": "l15-2-history",
+              "type": "history",
+              "title": "Jesus' first-century world",
+              "cardId": "second-temple",
+              "checkQuestion": {
+                "kind": "mc",
+                "prompt": "Which group did NOT exist in first-century Judea?",
+                "options": ["Pharisees", "Essenes", "Sadducees", "Crusaders"],
+                "answerIndex": 3
+              }
+            },
+            {
+              "id": "l15-3-memorize",
+              "type": "memorize",
+              "title": "Memorize John 3:16",
+              "ref": "John 3:16",
+              "text": "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life."
+            }
+          ]
+        },
+        {
+          "id": "s16-passion",
+          "title": "Cross & Resurrection",
+          "icon": "cross",
+          "lessons": [
+            {
+              "id": "l16-1-read",
+              "type": "read",
+              "title": "Read Luke 24:1–12",
+              "ref": "Luke 24:1-12",
+              "reflectPrompt": "Why did the women's report sound like 'idle tales' to the disciples? What changed?"
+            },
+            {
+              "id": "l16-2-prophecy",
+              "type": "prophecy",
+              "title": "Pierced hands and feet",
+              "cardId": "messiah-pierced"
+            },
+            {
+              "id": "l16-3-prophecy",
+              "type": "prophecy",
+              "title": "Not abandoned to the grave",
+              "cardId": "messiah-resurrection"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u8-acts",
+      "title": "Acts & the Early Church",
+      "subtitle": "Unit 8 · The Spirit poured out",
+      "skills": [
+        {
+          "id": "s17-pentecost",
+          "title": "Pentecost",
+          "icon": "flame",
+          "lessons": [
+            {
+              "id": "l17-1-read",
+              "type": "read",
+              "title": "Read Acts 2:1–21",
+              "ref": "Acts 2:1-21",
+              "reflectPrompt": "Why did God choose languages — many languages — as the first sign of the Spirit's coming?"
+            },
+            {
+              "id": "l17-2-quiz",
+              "type": "quiz",
+              "title": "Acts quiz",
+              "questions": [
+                {
+                  "kind": "mc",
+                  "prompt": "What appeared above the disciples at Pentecost?",
+                  "options": ["A bright light", "Cloven tongues like as of fire", "A dove", "An angel"],
+                  "answerIndex": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u9-epistles",
+      "title": "Paul's Epistles",
+      "subtitle": "Unit 9 · Letters to the churches",
+      "skills": [
+        {
+          "id": "s18-romans",
+          "title": "Romans: Justified by Faith",
+          "icon": "scroll",
+          "lessons": [
+            {
+              "id": "l18-1-read",
+              "type": "read",
+              "title": "Read Romans 5:1–11",
+              "ref": "Romans 5:1-11",
+              "reflectPrompt": "What is the connection between justification, peace with God, and rejoicing in tribulation?"
+            },
+            {
+              "id": "l18-2-history",
+              "type": "history",
+              "title": "Roman roads and the gospel",
+              "cardId": "pauls-roads",
+              "checkQuestion": {
+                "kind": "mc",
+                "prompt": "What gave the first-century church an infrastructure advantage?",
+                "options": [
+                  "Imperial endorsement",
+                  "Roman roads, Greek language, and Mediterranean shipping",
+                  "A unified Jewish leadership",
+                  "Wealth from the Temple"
+                ],
+                "answerIndex": 1
+              }
+            },
+            {
+              "id": "l18-3-memorize",
+              "type": "memorize",
+              "title": "Memorize Romans 8:28",
+              "ref": "Romans 8:28",
+              "text": "And we know that all things work together for good to them that love God, to them who are the called according to his purpose."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "u10-revelation",
+      "title": "Revelation & Promises Fulfilled",
+      "subtitle": "Unit 10 · The end of the story",
+      "skills": [
+        {
+          "id": "s19-newjerusalem",
+          "title": "The New Jerusalem",
+          "icon": "sparkles",
+          "lessons": [
+            {
+              "id": "l19-1-read",
+              "type": "read",
+              "title": "Read Revelation 21:1–7",
+              "ref": "Revelation 21:1-7",
+              "reflectPrompt": "Compare this to Genesis 1–3. What is restored? What is new?"
+            },
+            {
+              "id": "l19-2-quiz",
+              "type": "quiz",
+              "title": "Revelation quiz",
+              "questions": [
+                {
+                  "kind": "mc",
+                  "prompt": "In the New Jerusalem, what will God wipe from every eye?",
+                  "options": ["Sleep", "Tears", "Dust", "Sweat"],
+                  "answerIndex": 1
+                },
+                {
+                  "kind": "fill",
+                  "prompt": "'Behold, I make all things ____.'",
+                  "answer": "new"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
