@@ -91,10 +91,16 @@ function ReviewSession({ cards }: { cards: MemoryCard[] }) {
       <div className="text-sm text-ink-500 dark:text-ink-300/70">Card {idx + 1} of {cards.length} · stage {card.stage}</div>
       <div className="card space-y-3">
         <div className="text-sm font-medium text-gold-700 dark:text-gold-400">{card.ref}</div>
-        <div className="verse-text italic whitespace-pre-wrap">{revealed ? card.text : masked}</div>
-        <button onClick={() => setRevealed(r => !r)} className="btn-ghost self-start">
-          {revealed ? <><EyeOff size={16} /> Hide</> : <><Eye size={16} /> Reveal</>}
-        </button>
+        <div className="verse-text italic whitespace-pre-wrap">{card.stage === 1 || revealed ? card.text : masked}</div>
+        {card.stage === 1 ? (
+          <div className="text-xs text-ink-500 dark:text-ink-300/70 italic">
+            Stage 1: read along. Grade <strong>Good</strong> or <strong>Easy</strong> to unlock blanking on the next review.
+          </div>
+        ) : (
+          <button onClick={() => setRevealed(r => !r)} className="btn-ghost self-start">
+            {revealed ? <><EyeOff size={16} /> Hide</> : <><Eye size={16} /> Reveal</>}
+          </button>
+        )}
       </div>
       <div className="grid grid-cols-2 gap-2">
         <button onClick={() => grade('again')} className="px-3 py-3 rounded-xl border border-rose-300 text-rose-700 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-900/30 font-medium flex flex-col items-center">
