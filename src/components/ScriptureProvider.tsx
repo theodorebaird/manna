@@ -10,6 +10,10 @@ interface ScriptureCtx {
 
 const Ctx = createContext<ScriptureCtx | null>(null);
 
+// Eager-known loader map — Vite analyzes this at build time and code-splits each
+// book into its own chunk that lazy-loads on first request.
+const bookLoaders = import.meta.glob<{ default: BookData }>('../data/bible/kjv/*.json');
+
 export function ScriptureProvider({ children }: { children: ReactNode }) {
   const cache = useRef<Map<string, BookData>>(new Map());
   const inFlight = useRef<Map<string, Promise<BookData>>>(new Map());
@@ -18,9 +22,12 @@ export function ScriptureProvider({ children }: { children: ReactNode }) {
   const loadBook = useCallback(async (bookId: string): Promise<BookData> => {
     if (cache.current.has(bookId)) return cache.current.get(bookId)!;
     if (inFlight.current.has(bookId)) return inFlight.current.get(bookId)!;
+    const path = `../data/bible/kjv/${bookId}.json`;
+    const loader = bookLoaders[path];
+    if (!loader) throw new Error(`Bible book not found: ${bookId}`);
     const p = (async () => {
-      const mod = await import(/* @vite-ignore */ `../data/bible/kjv/${bookId}.json`);
-      const data = (mod.default ?? mod) as BookData;
+      const mod = await loader();
+      const data = (mod.default ?? (mod as unknown as BookData)) as BookData;
       cache.current.set(bookId, data);
       setLoaded(prev => {
         const next = new Set(prev);

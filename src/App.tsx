@@ -7,6 +7,7 @@ import Learn from './pages/Learn';
 import Lesson from './pages/Lesson';
 import Memorize from './pages/Memorize';
 import Settings from './pages/Settings';
+import HowTo from './pages/HowTo';
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
             <Route path="/lesson/:id" element={<Lesson />} />
             <Route path="/memorize" element={<Memorize />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/how-to" element={<HowTo />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

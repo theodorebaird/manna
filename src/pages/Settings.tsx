@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Sun, Moon, Monitor, Type, Trash2, Info } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Sun, Moon, Monitor, Type, Trash2, Info, HelpCircle, ChevronRight } from 'lucide-react';
 import { useTheme, type ThemeMode } from '../components/ThemeProvider';
 import { db, getSettings, updateSettings, type Settings as DBSettings } from '../db/db';
 
@@ -96,6 +97,19 @@ export default function Settings() {
           ))}
         </div>
       </div>
+
+      <Link to="/how-to" className="card flex items-center justify-between gap-3 hover:shadow-glow transition no-underline">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-gold-100 dark:bg-ink-700 flex items-center justify-center text-gold-700 dark:text-gold-300">
+            <HelpCircle size={20} />
+          </div>
+          <div>
+            <div className="font-semibold text-ink-800 dark:text-ink-100">How to use Manna</div>
+            <div className="text-xs text-ink-500 dark:text-ink-300/70">Walkthrough of every feature</div>
+          </div>
+        </div>
+        <ChevronRight className="text-ink-400" size={20} />
+      </Link>
 
       <div className="card space-y-2 text-sm text-ink-700 dark:text-ink-200">
         <div className="section-label flex items-center gap-1.5"><Info size={14} /> About Manna</div>

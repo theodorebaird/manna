@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, GraduationCap, Brain, ChevronRight, Sparkles } from 'lucide-react';
+import { BookOpen, GraduationCap, Brain, ChevronRight, Sparkles, HelpCircle } from 'lucide-react';
 import { regenerateHearts, type Settings } from '../db/db';
 import { getStreak, getTodayStats, getLast7Days } from '../lib/xp';
 import { computeUnlocks } from '../lib/lessons';
@@ -54,6 +54,13 @@ export default function Home() {
         </div>
         <div className="flex items-center gap-2">
           <StreakBadge count={streak} />
+          <Link
+            to="/how-to"
+            aria-label="How to use Manna"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-gold-700 dark:text-gold-300 bg-white/70 dark:bg-ink-800/70 border border-gold-200 dark:border-ink-700 hover:bg-gold-100 dark:hover:bg-ink-700 transition"
+          >
+            <HelpCircle size={18} />
+          </Link>
         </div>
       </header>
 
