@@ -1,4 +1,23 @@
-import { normalizeAnswer, compareAnswer } from './srs';
+import { normalizeWord } from './srs';
+
+function normalizeAnswer(s: string): string {
+  return s.toLowerCase().replace(/[^\w\s']/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function compareAnswer(expected: string, given: string): { correct: boolean } {
+  const a = normalizeAnswer(expected);
+  const b = normalizeAnswer(given);
+  if (!a || !b) return { correct: false };
+  if (a === b) return { correct: true };
+  // Tolerant fuzzy match for single-word and short answers
+  const aw = a.split(' ');
+  const bw = b.split(' ');
+  if (aw.length === 1) return { correct: normalizeWord(a) === normalizeWord(b) };
+  let hits = 0;
+  const len = Math.max(aw.length, bw.length);
+  for (let i = 0; i < len; i++) if (aw[i] && bw[i] && aw[i] === bw[i]) hits++;
+  return { correct: hits / len >= 0.85 };
+}
 
 export type QuizQuestion =
   | { kind: 'mc'; prompt: string; options: string[]; answerIndex: number; explain?: string }

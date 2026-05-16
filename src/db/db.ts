@@ -25,12 +25,15 @@ export interface MemoryCard {
   id?: number;
   ref: string;               // e.g. "John 3:16"
   text: string;              // KJV text snapshot
-  stage: 1 | 2 | 3 | 4;
-  easeFactor: number;
-  intervalDays: number;
+  masteryPercent: number;    // 0-100, drives blanking difficulty + scheduling
+  consecutiveCorrect: number;
   dueAt: number;             // epoch ms
   createdAt: number;
   lastReviewedAt: number | null;
+  // Legacy fields kept for old records; not used by new logic
+  stage?: 1 | 2 | 3 | 4;
+  easeFactor?: number;
+  intervalDays?: number;
 }
 
 export interface Bookmark {
@@ -80,6 +83,14 @@ class MannaDB extends Dexie {
       dailyStats: 'date',
       readingHistory: '++id, ref, readAt'
     });
+    this.version(2).stores({
+      memoryCards: '++id, ref, dueAt, masteryPercent'
+    }).upgrade(tx => tx.table('memoryCards').toCollection().modify(card => {
+      // Convert legacy stage (1-4) to mastery%. Stage 1→0%, 2→33%, 3→66%, 4→90%.
+      const legacyStage = card.stage ?? 1;
+      card.masteryPercent = Math.min(100, Math.max(0, (legacyStage - 1) * 33));
+      card.consecutiveCorrect = 0;
+    }));
   }
 }
 

@@ -100,21 +100,20 @@ export default function HowTo() {
 
       <Section
         icon={<Brain className="text-gold-600 dark:text-gold-400" size={20} />}
-        title="Memorize — spaced repetition"
+        title="Memorize — Learn → Test → Result"
       >
-        <p>Your memory deck. New verses start in <strong>Stage 1 (read along)</strong> where the full verse is shown. Each successful review advances the stage and the gap between reviews grows.</p>
+        <p>Your memory deck. Each verse has a <strong>mastery %</strong> that grows as you get it right. The app picks how hard to make the test based on where you are.</p>
         <ul className="list-disc pl-5 space-y-1">
-          <li><strong>Stage 1</strong>: read along — full verse visible. Grade <em>Good</em> or <em>Easy</em> to advance.</li>
-          <li><strong>Stage 2</strong>: every 3rd word is blanked. Tap <em>Reveal</em> to check yourself.</li>
-          <li><strong>Stage 3</strong>: every other word is blanked.</li>
-          <li><strong>Stage 4</strong>: full recall — type the whole verse from memory.</li>
-        </ul>
-        <p>The four grade buttons after each card decide when you'll see it next:</p>
-        <ul className="list-disc pl-5 space-y-1">
-          <li><strong>Again</strong> — I forgot. Reset to tomorrow.</li>
-          <li><strong>Hard</strong> — barely got it. Short interval.</li>
-          <li><strong>Good</strong> — got it. Standard interval.</li>
-          <li><strong>Easy</strong> — solid. Long interval, advance stage faster.</li>
+          <li><strong>Learn</strong> — for new verses (under 25% mastery), the full verse is shown first so you can read and study it. Tap <em>I'm ready to try</em> when set.</li>
+          <li><strong>Test</strong> — some words are hidden; you type them in. The number hidden depends on your mastery:
+            <ul className="list-[circle] pl-5 mt-1 space-y-0.5">
+              <li>Under 25% — only 2 words hidden (easy)</li>
+              <li>25–50% — every 4th word hidden</li>
+              <li>50–80% — every other word hidden</li>
+              <li>80%+ — type the whole verse from memory</li>
+            </ul>
+          </li>
+          <li><strong>Result</strong> — the app checks every word for you. Green = got it, red = missed. Your mastery % goes up or down accordingly, and the verse is scheduled to come back later (sooner if you struggled, much later if you nailed it).</li>
         </ul>
         <p className="text-xs text-ink-500 dark:text-ink-300/70 italic">
           The starter deck ships with 30 classic KJV verses (John 3:16, Psalm 23, Romans 8:28, etc.). Add any verse from the Read page, or use the <strong>+ Add a verse</strong> button on Memorize → Browse.
