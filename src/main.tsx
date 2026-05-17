@@ -4,7 +4,13 @@ import { BrowserRouter } from 'react-router-dom';
 import { registerSW } from 'virtual:pwa-register';
 import App from './App';
 import { ThemeProvider } from './components/ThemeProvider';
+import { getVoices as preloadVoices } from './lib/tts';
 import './index.css';
+
+// Trigger voice loading early so the cache is warm by the time anyone calls
+// speak() — otherwise on a cold tab the voice lookup races against the
+// browser's async voice loading and quietly falls back to the default voice.
+preloadVoices().catch(() => {});
 
 // Auto-detect new app versions and expose a global helper that any page can
 // call to force an update. The Settings page surfaces both as a button.

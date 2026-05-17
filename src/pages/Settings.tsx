@@ -264,13 +264,13 @@ function VoiceCard({
     );
   }
 
-  const test = (voiceURI: string | null) => {
+  const test = (voice: SpeechSynthesisVoice | null) => {
     testSpeaker.stop();
-    setTesting(voiceURI ?? 'default');
+    setTesting(voice?.voiceURI ?? 'default');
     testSpeaker.speak(
       [{ text: 'For God so loved the world, that he gave his only begotten Son.' }],
       {
-        voiceURI,
+        voice,
         rate: currentRate,
         onEnd: () => setTesting(null),
         onError: () => setTesting(null)
@@ -335,7 +335,8 @@ function VoiceCard({
               <Play size={14} className={testing === 'default' ? 'animate-pulse' : ''} />
             </button>
           </button>
-          {voices.map(v => {
+          {voices.map(voice => {
+            const v = voice;
             const active = currentVoiceURI === v.voiceURI;
             return (
               <button
@@ -356,7 +357,7 @@ function VoiceCard({
                   </div>
                 </div>
                 <button
-                  onClick={e => { e.stopPropagation(); test(v.voiceURI); }}
+                  onClick={e => { e.stopPropagation(); test(v); }}
                   className="text-gold-700 dark:text-gold-400 px-2 py-1 rounded hover:bg-gold-100 dark:hover:bg-ink-600 flex-shrink-0"
                   title="Test"
                 >
