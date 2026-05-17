@@ -35,7 +35,22 @@ interface Curriculum {
   units: Unit[];
 }
 
-const data = lessonsData as Curriculum;
+const rawData = lessonsData as Curriculum;
+
+// Filter out memorize-type lessons from the Learn skill tree — memorization
+// lives in its own Memorize tab. Skills with no lessons after filtering are
+// dropped so we don't render empty skill nodes.
+const data: Curriculum = {
+  units: rawData.units.map(unit => ({
+    ...unit,
+    skills: unit.skills
+      .map(skill => ({
+        ...skill,
+        lessons: skill.lessons.filter(l => l.type !== 'memorize')
+      }))
+      .filter(skill => skill.lessons.length > 0)
+  })).filter(unit => unit.skills.length > 0)
+};
 
 export function getCurriculum(): Curriculum {
   return data;
