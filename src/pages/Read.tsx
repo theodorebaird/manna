@@ -5,7 +5,7 @@ import {
   Sparkles, Highlighter, ZoomIn, ZoomOut, X, Save, Pencil, BookText
 } from 'lucide-react';
 import { useScripture, TRANSLATIONS } from '../components/ScriptureProvider';
-import { bookById, BOOKS, CHRONOLOGICAL_IDS, type BookInfo, type Verse } from '../lib/bible';
+import { bookById, BOOKS, CHRONOLOGICAL_IDS, CHRONOLOGICAL_ORDER, type BookInfo, type Verse } from '../lib/bible';
 import BookPicker from '../components/BookPicker';
 import { db, getSettings, updateSettings, type Settings, type Highlight } from '../db/db';
 import { CalendarRange, BookOpenCheck } from 'lucide-react';
@@ -114,6 +114,25 @@ export default function Read() {
 
   const order = settings?.bibleOrder === 'chronological' ? 'chronological' : 'canonical';
   const orderedIds = order === 'chronological' ? CHRONOLOGICAL_IDS : BOOKS.map(b => b.id);
+  const currentBookEra = order === 'chronological'
+    ? CHRONOLOGICAL_ORDER.find(c => c.id === book.id)?.era
+    : null;
+
+  const prevLabel = (() => {
+    if (chapter > 1) return `${book.name} ${chapter - 1}`;
+    const idx = orderedIds.indexOf(book.id);
+    if (idx > 0) { const prev = bookById(orderedIds[idx - 1]); return prev ? `${prev.name} ${prev.chapters}` : ''; }
+    return '';
+  })();
+  const nextLabel = (() => {
+    if (chapter < book.chapters) return `${book.name} ${chapter + 1}`;
+    const idx = orderedIds.indexOf(book.id);
+    if (idx >= 0 && idx < orderedIds.length - 1) {
+      const nxt = bookById(orderedIds[idx + 1]);
+      return nxt ? `${nxt.name} 1` : '';
+    }
+    return '';
+  })();
 
   const goPrev = () => {
     if (chapter > 1) navigate(`/read/${book.id}/${chapter - 1}`);
@@ -186,6 +205,26 @@ export default function Read() {
   return (
     <div className="space-y-4 animate-fade-in">
       <header className="space-y-2">
+        {/* Reading order — primary mode toggle at the very top */}
+        <div className="grid grid-cols-2 gap-1 p-1 rounded-2xl bg-ink-100/70 dark:bg-ink-800/70 border border-gold-200 dark:border-ink-700">
+          <button
+            onClick={() => setOrder('canonical')}
+            className={`py-2 rounded-xl text-sm font-semibold transition flex items-center justify-center gap-1.5 ${
+              order === 'canonical' ? 'bg-white dark:bg-ink-700 text-gold-700 dark:text-gold-300 shadow-soft' : 'text-ink-600 dark:text-ink-300'
+            }`}
+          >
+            <BookOpenCheck size={15} /> Canonical
+          </button>
+          <button
+            onClick={() => setOrder('chronological')}
+            className={`py-2 rounded-xl text-sm font-semibold transition flex items-center justify-center gap-1.5 ${
+              order === 'chronological' ? 'bg-white dark:bg-ink-700 text-gold-700 dark:text-gold-300 shadow-soft' : 'text-ink-600 dark:text-ink-300'
+            }`}
+          >
+            <CalendarRange size={15} /> Chronological
+          </button>
+        </div>
+
         <div className="flex items-center justify-between gap-2">
           <button onClick={() => setPicker(true)} className="btn-outline flex-1">
             <BookOpen size={18} />
@@ -203,24 +242,13 @@ export default function Read() {
             </Link>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-ink-100/70 dark:bg-ink-800/70 border border-gold-100 dark:border-ink-700">
-          <button
-            onClick={() => setOrder('canonical')}
-            className={`py-1.5 rounded-lg text-xs font-medium transition flex items-center justify-center gap-1.5 ${
-              order === 'canonical' ? 'bg-white dark:bg-ink-700 text-gold-700 dark:text-gold-300 shadow-soft' : 'text-ink-600 dark:text-ink-300'
-            }`}
-          >
-            <BookOpenCheck size={13} /> Canonical
-          </button>
-          <button
-            onClick={() => setOrder('chronological')}
-            className={`py-1.5 rounded-lg text-xs font-medium transition flex items-center justify-center gap-1.5 ${
-              order === 'chronological' ? 'bg-white dark:bg-ink-700 text-gold-700 dark:text-gold-300 shadow-soft' : 'text-ink-600 dark:text-ink-300'
-            }`}
-          >
-            <CalendarRange size={13} /> Chronological
-          </button>
-        </div>
+
+        {order === 'chronological' && (
+          <div className="text-[11px] text-ink-500 dark:text-ink-300/70 italic px-1 flex items-center gap-1.5">
+            <CalendarRange size={11} className="text-gold-600 dark:text-gold-400" />
+            {currentBookEra ? `${book.name} — ${currentBookEra}` : `Reading in chronological order. Tap Next to follow the timeline.`}
+          </div>
+        )}
       </header>
 
       <div className="card">
@@ -268,8 +296,20 @@ export default function Read() {
       )}
 
       <div className="flex justify-between gap-2">
-        <button onClick={goPrev} className="btn-ghost"><ChevronLeft size={18} /> Prev</button>
-        <button onClick={goNext} className="btn-ghost">Next <ChevronRight size={18} /></button>
+        <button onClick={goPrev} className="btn-ghost text-left">
+          <ChevronLeft size={18} />
+          <div className="flex flex-col items-start leading-tight">
+            <span className="text-[10px] uppercase tracking-wider opacity-70">Prev</span>
+            <span className="text-xs">{prevLabel}</span>
+          </div>
+        </button>
+        <button onClick={goNext} className="btn-ghost text-right">
+          <div className="flex flex-col items-end leading-tight">
+            <span className="text-[10px] uppercase tracking-wider opacity-70">Next</span>
+            <span className="text-xs">{nextLabel}</span>
+          </div>
+          <ChevronRight size={18} />
+        </button>
       </div>
 
       <BookPicker

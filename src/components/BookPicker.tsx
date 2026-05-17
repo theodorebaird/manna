@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BOOKS, CHRONOLOGICAL_ORDER, bookById, type BookInfo } from '../lib/bible';
-import { X } from 'lucide-react';
-import { getSettings, updateSettings, type Settings } from '../db/db';
+import { X, CalendarRange } from 'lucide-react';
+import { getSettings } from '../db/db';
 
 interface Props {
   open: boolean;
@@ -23,15 +23,10 @@ export default function BookPicker({ open, onClose, onPick, currentBookId }: Pro
   useEffect(() => {
     if (!open) return;
     (async () => {
-      const s: Settings = await getSettings();
-      if (s.bibleOrder === 'chronological') setOrderMode('chronological');
+      const s = await getSettings();
+      setOrderMode(s.bibleOrder === 'chronological' ? 'chronological' : 'canonical');
     })();
   }, [open]);
-
-  const changeOrder = async (m: OrderMode) => {
-    setOrderMode(m);
-    await updateSettings({ bibleOrder: m });
-  };
 
   if (!open) return null;
 
@@ -82,6 +77,12 @@ export default function BookPicker({ open, onClose, onPick, currentBookId }: Pro
           </button>
         </div>
 
+        {!selected && orderMode === 'chronological' && (
+          <div className="px-4 pt-3 text-xs text-gold-700 dark:text-gold-400 italic flex items-center gap-1.5">
+            <CalendarRange size={12} /> Books listed in approximate chronological order
+          </div>
+        )}
+
         {!selected && (
           <>
             <div className="flex gap-2 p-3 border-b border-gold-100 dark:border-ink-700">
@@ -101,26 +102,6 @@ export default function BookPicker({ open, onClose, onPick, currentBookId }: Pro
               >
                 New Testament
               </button>
-            </div>
-            <div className="px-3 pt-3 -mb-1">
-              <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-ink-100/70 dark:bg-ink-700/70 border border-gold-100 dark:border-ink-700">
-                <button
-                  onClick={() => changeOrder('canonical')}
-                  className={`py-1.5 rounded-lg text-xs font-medium transition ${
-                    orderMode === 'canonical' ? 'bg-white dark:bg-ink-800 text-gold-700 dark:text-gold-300 shadow-soft' : 'text-ink-600 dark:text-ink-300'
-                  }`}
-                >
-                  Canonical
-                </button>
-                <button
-                  onClick={() => changeOrder('chronological')}
-                  className={`py-1.5 rounded-lg text-xs font-medium transition ${
-                    orderMode === 'chronological' ? 'bg-white dark:bg-ink-800 text-gold-700 dark:text-gold-300 shadow-soft' : 'text-ink-600 dark:text-ink-300'
-                  }`}
-                >
-                  Chronological
-                </button>
-              </div>
             </div>
             <div className="overflow-y-auto p-3 grid grid-cols-2 gap-2">
               {renderBooks()}
