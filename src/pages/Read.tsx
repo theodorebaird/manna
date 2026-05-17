@@ -1,33 +1,57 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, BookOpen, Bookmark as BookmarkIcon, Brain, Sparkles } from 'lucide-react';
+import {
+  ChevronLeft, ChevronRight, BookOpen, Bookmark as BookmarkIcon, Brain,
+  Sparkles, Highlighter, ZoomIn, ZoomOut, X, Save, Pencil, BookText
+} from 'lucide-react';
 import { useScripture, TRANSLATIONS } from '../components/ScriptureProvider';
 import { bookById, BOOKS, type BookInfo, type Verse, formatRef } from '../lib/bible';
-import VerseList from '../components/VerseList';
 import BookPicker from '../components/BookPicker';
-import { db, getSettings, updateSettings, type Settings } from '../db/db';
+import { db, getSettings, updateSettings, type Settings, type Highlight } from '../db/db';
 import { createCard } from '../lib/srs';
+import { useLiveQuery } from 'dexie-react-hooks';
 import historyCards from '../data/history-cards.json';
 import prophecyCards from '../data/prophecy-cards.json';
+import crossRefs from '../data/cross-references.json';
 
 interface AttachedCards {
-  history: { id: string; title: string }[];
+  history: { id: string; title: string; body: string }[];
   prophecy: { id: string; title: string }[];
 }
 
 function getAttachedCards(book: BookInfo, chapter: number): AttachedCards {
   const ref = `${book.name} ${chapter}`;
-  const h = (historyCards as { id: string; title: string; refs: string[] }[]).filter(c =>
-    c.refs.some(r => r.startsWith(ref))
+  const h = (historyCards as { id: string; title: string; body: string; refs: string[] }[]).filter(c =>
+    c.refs.some(r => r === ref || r.startsWith(ref + ':') || r.startsWith(book.name + ' ' + chapter + '-'))
   );
   const p = (prophecyCards as { id: string; title: string; prediction: { ref: string }; fulfillment: { ref: string } }[]).filter(c =>
     c.prediction.ref.startsWith(ref) || c.fulfillment.ref.startsWith(ref)
   );
   return {
-    history: h.map(c => ({ id: c.id, title: c.title })),
+    history: h.map(c => ({ id: c.id, title: c.title, body: c.body })),
     prophecy: p.map(c => ({ id: c.id, title: c.title }))
   };
 }
+
+const HIGHLIGHT_COLORS = ['yellow', 'green', 'blue', 'pink', 'orange'] as const;
+type HL = typeof HIGHLIGHT_COLORS[number];
+
+const HL_BG_LIGHT: Record<HL, string> = {
+  yellow: 'rgba(252, 211, 77, 0.5)',
+  green: 'rgba(110, 231, 183, 0.5)',
+  blue: 'rgba(147, 197, 253, 0.5)',
+  pink: 'rgba(244, 114, 182, 0.45)',
+  orange: 'rgba(253, 186, 116, 0.55)'
+};
+const HL_BG_DARK: Record<HL, string> = {
+  yellow: 'rgba(180, 83, 9, 0.45)',
+  green: 'rgba(6, 95, 70, 0.55)',
+  blue: 'rgba(30, 64, 175, 0.45)',
+  pink: 'rgba(157, 23, 77, 0.5)',
+  orange: 'rgba(154, 52, 18, 0.5)'
+};
+
+const SIZE_SCALE = { sm: 0.9, md: 1, lg: 1.15, xl: 1.3 } as const;
 
 export default function Read() {
   const params = useParams<{ book?: string; chapter?: string }>();
@@ -39,17 +63,31 @@ export default function Read() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [selectedVerse, setSelectedVerse] = useState<Verse | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [zoomDelta, setZoomDelta] = useState(0);     // ranges -2..+3
+  const [studyVerse, setStudyVerse] = useState<{ verse: Verse; ref: string } | null>(null);
+  const [noteVerse, setNoteVerse] = useState<{ verse: Verse; ref: string; existingNote: string } | null>(null);
+  const [historyOpen, setHistoryOpen] = useState<string | null>(null);
 
   const bookId = params.book ?? 'john';
   const chapter = Math.max(1, parseInt(params.chapter ?? '1', 10));
-  const book = bookById(bookId) ?? BOOKS[42]; // John fallback
+  const book = bookById(bookId) ?? BOOKS[42];
 
   const cards = getAttachedCards(book, chapter);
 
+  // Highlights for this chapter
+  const highlights = useLiveQuery(
+    () => db.highlights.where('[bookId+chapter]').equals([book.id, chapter]).toArray(),
+    [book.id, chapter],
+    []
+  );
+  const highlightMap = useMemo(() => {
+    const m = new Map<number, HL>();
+    for (const h of highlights ?? []) m.set(h.verse, h.color as HL);
+    return m;
+  }, [highlights]);
+
   useEffect(() => {
-    (async () => {
-      setSettings(await getSettings());
-    })();
+    (async () => { setSettings(await getSettings()); })();
   }, []);
 
   useEffect(() => {
@@ -71,10 +109,7 @@ export default function Read() {
     if (chapter > 1) navigate(`/read/${book.id}/${chapter - 1}`);
     else {
       const idx = BOOKS.findIndex(b => b.id === book.id);
-      if (idx > 0) {
-        const prev = BOOKS[idx - 1];
-        navigate(`/read/${prev.id}/${prev.chapters}`);
-      }
+      if (idx > 0) { const prev = BOOKS[idx - 1]; navigate(`/read/${prev.id}/${prev.chapters}`); }
     }
   };
   const goNext = () => {
@@ -85,24 +120,44 @@ export default function Read() {
     }
   };
 
-  const bookmark = async (v: Verse) => {
+  const flash = (msg: string) => { setToast(msg); window.setTimeout(() => setToast(null), 1800); };
+
+  const bookmark = async (v: Verse, openNote = false) => {
     const ref = `${book.name} ${chapter}:${v.v}`;
+    const existing = await db.bookmarks.where('ref').equals(ref).first();
+    if (existing) {
+      if (openNote) setNoteVerse({ verse: v, ref, existingNote: existing.note ?? '' });
+      else flash(`Already bookmarked`);
+      return;
+    }
     await db.bookmarks.add({ ref, text: v.t, createdAt: Date.now() });
-    flash(`Bookmarked ${ref}`);
+    if (openNote) setNoteVerse({ verse: v, ref, existingNote: '' });
+    else flash(`Bookmarked ${ref}`);
   };
 
   const toMemorize = async (v: Verse) => {
     const ref = `${book.name} ${chapter}:${v.v}`;
     const exists = await db.memoryCards.where('ref').equals(ref).first();
-    if (exists) { flash(`Already in your memory deck`); return; }
+    if (exists) { flash(`Already in memory deck`); return; }
     await db.memoryCards.add(createCard(ref, v.t));
     flash(`Added ${ref} to memorize`);
   };
 
-  const flash = (msg: string) => {
-    setToast(msg);
-    window.setTimeout(() => setToast(null), 1800);
+  const highlight = async (v: Verse, color: HL) => {
+    const ref = `${book.name} ${chapter}:${v.v}`;
+    const existing = await db.highlights.where('ref').equals(ref).first();
+    if (existing) {
+      if (existing.color === color) await db.highlights.delete(existing.id!);
+      else await db.highlights.update(existing.id!, { color });
+    } else {
+      const entry: Omit<Highlight, 'id'> = { ref, bookId: book.id, chapter, verse: v.v, color, createdAt: Date.now() };
+      await db.highlights.add(entry as Highlight);
+    }
+    setSelectedVerse(null);
   };
+
+  const baseSize = SIZE_SCALE[settings?.fontSize ?? 'md'];
+  const effectiveScale = baseSize * (1 + zoomDelta * 0.12);
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -111,16 +166,25 @@ export default function Read() {
           <BookOpen size={18} />
           {book.name} {chapter}
         </button>
-        <Link to="/settings" className="chip text-xs" title="Change translation in Settings">
-          {translation?.short ?? 'KJV'}
-        </Link>
+        <div className="flex items-center gap-1">
+          <button onClick={() => setZoomDelta(z => Math.max(-2, z - 1))} className="w-9 h-9 rounded-full border border-gold-200 dark:border-ink-600 text-ink-700 dark:text-ink-200 flex items-center justify-center" title="Smaller">
+            <ZoomOut size={16} />
+          </button>
+          <button onClick={() => setZoomDelta(z => Math.min(3, z + 1))} className="w-9 h-9 rounded-full border border-gold-200 dark:border-ink-600 text-ink-700 dark:text-ink-200 flex items-center justify-center" title="Larger">
+            <ZoomIn size={16} />
+          </button>
+          <Link to="/settings" className="chip text-xs" title="Change translation in Settings">
+            {translation?.short ?? 'KJV'}
+          </Link>
+        </div>
       </header>
 
       <div className="card">
-        <VerseList
+        <ChapterRenderer
           verses={verses}
-          highlightVerse={selectedVerse?.v}
-          fontSize={settings?.fontSize ?? 'md'}
+          scale={effectiveScale}
+          highlightMap={highlightMap}
+          selectedVerse={selectedVerse?.v ?? null}
           onVerseClick={v => setSelectedVerse(prev => (prev?.v === v.v ? null : v))}
         />
       </div>
@@ -130,13 +194,36 @@ export default function Read() {
           <div className="text-sm font-medium text-gold-700 dark:text-gold-400">
             {formatRef({ book, chapter, verseStart: selectedVerse.v })}
           </div>
+
           <div className="flex gap-2 flex-wrap">
-            <button onClick={() => bookmark(selectedVerse)} className="chip">
-              <BookmarkIcon size={14} className="mr-1.5" /> Bookmark
+            <button onClick={() => bookmark(selectedVerse, false)} className="chip">
+              <BookmarkIcon size={14} className="mr-1.5" /> Save
+            </button>
+            <button onClick={() => bookmark(selectedVerse, true)} className="chip">
+              <Pencil size={14} className="mr-1.5" /> Save + note
             </button>
             <button onClick={() => toMemorize(selectedVerse)} className="chip">
               <Brain size={14} className="mr-1.5" /> Memorize
             </button>
+            <button onClick={() => setStudyVerse({ verse: selectedVerse, ref: `${book.name} ${chapter}:${selectedVerse.v}` })} className="chip">
+              <BookText size={14} className="mr-1.5" /> Study
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Highlighter size={14} className="text-ink-500 dark:text-ink-300/70" />
+            <div className="flex gap-1.5">
+              {HIGHLIGHT_COLORS.map(c => (
+                <button
+                  key={c}
+                  onClick={() => highlight(selectedVerse, c)}
+                  className={`w-7 h-7 rounded-full border-2 transition ${
+                    highlightMap.get(selectedVerse.v) === c ? 'border-ink-900 dark:border-ink-100 scale-110' : 'border-white/60 dark:border-ink-700'
+                  } hl-${c}`}
+                  title={`Highlight ${c}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -146,10 +233,24 @@ export default function Read() {
           <div className="section-label flex items-center gap-1.5"><Sparkles size={14} /> Study this passage</div>
           <div className="flex flex-col gap-2">
             {cards.history.map(c => (
-              <div key={c.id} className="text-sm px-3 py-2 rounded-xl border border-gold-100 dark:border-ink-700 bg-gold-50/60 dark:bg-ink-700/40">
-                <span className="text-xs uppercase tracking-wide text-gold-700 dark:text-gold-400 font-semibold mr-2">History</span>
-                {c.title}
-              </div>
+              <button
+                key={c.id}
+                onClick={() => setHistoryOpen(historyOpen === c.id ? null : c.id)}
+                className="text-left text-sm px-3 py-2 rounded-xl border border-gold-100 dark:border-ink-700 bg-gold-50/60 dark:bg-ink-700/40"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-xs uppercase tracking-wide text-gold-700 dark:text-gold-400 font-semibold mr-2">History</span>
+                    {c.title}
+                  </div>
+                  <ChevronRight size={14} className={`text-ink-400 transition ${historyOpen === c.id ? 'rotate-90' : ''}`} />
+                </div>
+                {historyOpen === c.id && (
+                  <div className="mt-3 pt-3 border-t border-gold-100 dark:border-ink-700 text-ink-700 dark:text-ink-200 leading-relaxed whitespace-pre-wrap">
+                    {c.body}
+                  </div>
+                )}
+              </button>
             ))}
             {cards.prophecy.map(c => (
               <div key={c.id} className="text-sm px-3 py-2 rounded-xl border border-gold-100 dark:border-ink-700 bg-gold-50/60 dark:bg-ink-700/40">
@@ -174,11 +275,163 @@ export default function Read() {
         currentChapter={chapter}
       />
 
+      {studyVerse && (
+        <StudyModal verse={studyVerse.verse} ref={studyVerse.ref} onClose={() => setStudyVerse(null)} />
+      )}
+
+      {noteVerse && (
+        <NoteModal
+          ref={noteVerse.ref}
+          text={noteVerse.verse.t}
+          initialNote={noteVerse.existingNote}
+          onClose={() => setNoteVerse(null)}
+          onSave={async note => {
+            const existing = await db.bookmarks.where('ref').equals(noteVerse.ref).first();
+            if (existing) await db.bookmarks.update(existing.id!, { note: note.trim() || undefined, updatedAt: Date.now() });
+            setNoteVerse(null);
+            flash('Note saved');
+          }}
+        />
+      )}
+
       {toast && (
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-ink-900 text-gold-100 px-4 py-2 rounded-full text-sm shadow-soft animate-fade-in z-40">
           {toast}
         </div>
       )}
+    </div>
+  );
+}
+
+function ChapterRenderer({ verses, scale, highlightMap, selectedVerse, onVerseClick }: {
+  verses: Verse[];
+  scale: number;
+  highlightMap: Map<number, HL>;
+  selectedVerse: number | null;
+  onVerseClick: (v: Verse) => void;
+}) {
+  if (verses.length === 0) {
+    return <div className="text-center text-ink-500 dark:text-ink-300/70 py-8">Loading scripture…</div>;
+  }
+  // We detect dark mode via the html class
+  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+  return (
+    <div
+      className="font-serif leading-relaxed text-ink-800 dark:text-ink-100"
+      style={{ fontSize: `${scale}rem`, lineHeight: 1.55 }}
+    >
+      {verses.map(v => {
+        const isSelected = selectedVerse === v.v;
+        const hl = highlightMap.get(v.v);
+        const bg = hl
+          ? (isDark ? HL_BG_DARK[hl] : HL_BG_LIGHT[hl])
+          : undefined;
+        return (
+          <span
+            key={v.v}
+            id={`v${v.v}`}
+            onClick={() => onVerseClick(v)}
+            className={`inline cursor-pointer transition rounded px-0.5 ${
+              isSelected ? 'ring-2 ring-gold-500 ring-offset-1 ring-offset-transparent' : ''
+            }`}
+            style={{ backgroundColor: bg }}
+          >
+            <sup className="text-xs font-sans font-semibold text-gold-600 dark:text-gold-400 mr-1 select-none">{v.v}</sup>
+            {v.t}{' '}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+function StudyModal({ verse, ref, onClose }: { verse: Verse; ref: string; onClose: () => void }) {
+  const data = (crossRefs as Record<string, { refs: string[]; commentary: string }>)[ref];
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-ink-900/60 backdrop-blur-sm animate-fade-in" onClick={onClose}>
+      <div
+        className="w-full max-w-md max-h-[85vh] overflow-y-auto bg-white dark:bg-ink-800 rounded-t-2xl sm:rounded-2xl border border-gold-200 dark:border-ink-700 shadow-soft p-4 space-y-4 animate-slide-up"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between">
+          <h3 className="font-serif text-xl text-gold-700 dark:text-gold-300 flex items-center gap-2">
+            <BookText size={20} /> Study
+          </h3>
+          <button onClick={onClose} className="text-ink-500 hover:text-ink-800 dark:hover:text-ink-100"><X size={20} /></button>
+        </div>
+
+        <div className="space-y-2">
+          <div className="text-sm font-medium text-gold-700 dark:text-gold-400">{ref}</div>
+          <div className="verse-text italic text-base">{verse.t}</div>
+        </div>
+
+        {data ? (
+          <>
+            <div className="space-y-2">
+              <div className="section-label">Commentary</div>
+              <div className="text-sm text-ink-700 dark:text-ink-200 leading-relaxed">{data.commentary}</div>
+            </div>
+            <div className="space-y-2">
+              <div className="section-label">Cross-references</div>
+              <div className="flex flex-wrap gap-1.5">
+                {data.refs.map(r => {
+                  const slug = r.toLowerCase().replace(/^(\d)\s+/, '$1-').replace(/\s+\d+:\d+(-\d+)?$/, '').replace(/\s+/g, '-');
+                  const chapter = r.match(/(\d+):/)?.[1] ?? '1';
+                  return (
+                    <Link
+                      key={r}
+                      to={`/read/${slug}/${chapter}`}
+                      onClick={onClose}
+                      className="chip text-xs"
+                    >
+                      {r}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="card-tight text-sm text-ink-600 dark:text-ink-300 italic">
+            No commentary yet for this verse. We're adding study notes one verse at a time — popular verses come first. Try John 3:16, Romans 8:28, Psalm 23:1, or any other classic.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function NoteModal({ ref, text, initialNote, onClose, onSave }: {
+  ref: string;
+  text: string;
+  initialNote: string;
+  onClose: () => void;
+  onSave: (note: string) => Promise<void> | void;
+}) {
+  const [note, setNote] = useState(initialNote);
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-ink-900/60 backdrop-blur-sm animate-fade-in" onClick={onClose}>
+      <div
+        className="w-full max-w-md bg-white dark:bg-ink-800 rounded-t-2xl sm:rounded-2xl border border-gold-200 dark:border-ink-700 shadow-soft p-4 space-y-3 animate-slide-up"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between">
+          <h3 className="font-serif text-xl text-gold-700 dark:text-gold-300">Note on {ref}</h3>
+          <button onClick={onClose} className="text-ink-500 hover:text-ink-800 dark:hover:text-ink-100"><X size={20} /></button>
+        </div>
+        <div className="verse-text italic text-sm text-ink-700 dark:text-ink-200">{text}</div>
+        <textarea
+          autoFocus
+          value={note}
+          onChange={e => setNote(e.target.value)}
+          rows={5}
+          placeholder="What does this verse mean to you? What did God show you?"
+          className="input resize-none"
+        />
+        <button onClick={() => onSave(note)} className="btn-primary w-full">
+          <Save size={16} /> Save note
+        </button>
+      </div>
     </div>
   );
 }

@@ -8,6 +8,11 @@ import Lesson from './pages/Lesson';
 import Memorize from './pages/Memorize';
 import Settings from './pages/Settings';
 import HowTo from './pages/HowTo';
+import Topics from './pages/Topics';
+import Pray from './pages/Pray';
+import Books from './pages/Books';
+import Saved from './pages/Saved';
+import Plan from './pages/Plan';
 
 export default function App() {
   return (
@@ -21,6 +26,11 @@ export default function App() {
             <Route path="/learn" element={<Learn />} />
             <Route path="/lesson/:id" element={<Lesson />} />
             <Route path="/memorize" element={<Memorize />} />
+            <Route path="/pray" element={<Pray />} />
+            <Route path="/topics" element={<Topics />} />
+            <Route path="/books" element={<Books />} />
+            <Route path="/saved" element={<Saved />} />
+            <Route path="/plan/:id" element={<Plan />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/how-to" element={<HowTo />} />
             <Route path="*" element={<Navigate to="/" replace />} />

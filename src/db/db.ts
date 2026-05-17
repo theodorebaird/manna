@@ -41,7 +41,10 @@ export interface Bookmark {
   id?: number;
   ref: string;
   text: string;
+  note?: string;        // optional user note attached to the saved verse
+  color?: string;       // optional highlight color, e.g. 'yellow', 'green'
   createdAt: number;
+  updatedAt?: number;
 }
 
 export interface Note {
@@ -49,6 +52,28 @@ export interface Note {
   ref: string;
   body: string;
   createdAt: number;
+}
+
+export interface Highlight {
+  id?: number;
+  ref: string;           // book chapter:verse, e.g. "John 3:16"
+  bookId: string;
+  chapter: number;
+  verse: number;
+  color: 'yellow' | 'green' | 'blue' | 'pink' | 'orange';
+  createdAt: number;
+}
+
+export interface PrayerProgress {
+  date: string;          // YYYY-MM-DD
+  prayerIds: string[];
+}
+
+export interface PlanProgress {
+  id?: number;
+  planId: string;
+  day: number;
+  completedAt: number;
 }
 
 export interface DailyStat {
@@ -72,6 +97,9 @@ class MannaDB extends Dexie {
   notes!: Table<Note, number>;
   dailyStats!: Table<DailyStat, string>;
   readingHistory!: Table<ReadingHistoryEntry, number>;
+  highlights!: Table<Highlight, number>;
+  prayerProgress!: Table<PrayerProgress, string>;
+  planProgress!: Table<PlanProgress, number>;
 
   constructor() {
     super('manna');
@@ -92,6 +120,11 @@ class MannaDB extends Dexie {
       card.masteryPercent = Math.min(100, Math.max(0, (legacyStage - 1) * 33));
       card.consecutiveCorrect = 0;
     }));
+    this.version(3).stores({
+      highlights: '++id, ref, bookId, [bookId+chapter], color, createdAt',
+      prayerProgress: 'date',
+      planProgress: '++id, planId, day, completedAt'
+    });
   }
 }
 

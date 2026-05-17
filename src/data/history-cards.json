@@ -4,14 +4,35 @@
     "title": "How ancient peoples saw the cosmos",
     "refs": ["Genesis 1"],
     "body": "Ancient Near Eastern cultures pictured the world as a flat disk under a solid dome (the 'firmament') with waters above and below. Other creation accounts from the region — like the Babylonian Enuma Elish — describe creation as a battle between gods. Genesis stands apart by depicting a single God who creates by word, calls it 'good,' and gives humanity dignity as His image-bearers. It addresses the same cosmic questions but reframes the answer entirely.",
-    "sources": ["Walton, The Lost World of Genesis One", "ANET texts"]
+    "sources": ["Walton, The Lost World of Genesis One"]
+  },
+  {
+    "id": "flood-narratives",
+    "title": "Flood stories across cultures",
+    "refs": ["Genesis 6", "Genesis 7", "Genesis 8"],
+    "body": "Nearly every ancient culture preserves a flood story — the Epic of Gilgamesh (Babylon), Atrahasis, and accounts from Greece, India, China, and the Americas. Most describe a divine warning, a chosen survivor, and a boat. What sets Genesis apart is its moral framing: the flood comes because of human wickedness, and ends with covenant grace — the rainbow as a promise that God will preserve creation despite human failure.",
+    "sources": ["Kitchen, On the Reliability of the Old Testament"]
   },
   {
     "id": "abraham-ur",
     "title": "Abraham's world: Ur and the long road to Canaan",
-    "refs": ["Genesis 12"],
-    "body": "Ur of the Chaldees was a major Sumerian city near the Persian Gulf, prosperous around 2000 BC. Abraham's family migrated north to Haran, then south through the Levant. The promise that he would father 'a great nation' was extraordinary — he was 75, childless, and leaving a sophisticated urban culture for a pastoral life among Canaanite city-states.",
+    "refs": ["Genesis 11", "Genesis 12"],
+    "body": "Ur of the Chaldees was a major Sumerian city near the Persian Gulf, prosperous around 2000 BC with stone temples, libraries, and trade routes. Abraham's family migrated north to Haran, then south through the Levant. The promise that he would father 'a great nation' was extraordinary — he was 75, childless, and leaving a sophisticated urban culture for a pastoral life among Canaanite city-states.",
     "sources": ["Kitchen, On the Reliability of the Old Testament"]
+  },
+  {
+    "id": "akedah",
+    "title": "The Akedah: 'binding' of Isaac",
+    "refs": ["Genesis 22"],
+    "body": "Jewish tradition calls Genesis 22 the Akedah ('binding'). In a culture where child sacrifice was practiced by surrounding nations (the Canaanites burned children to Molech), Yahweh's command shocked Abraham — and the dramatic reversal made a permanent theological point: the God of Israel does NOT require human sacrifice. The ram caught in the thicket previews the substitutionary atonement that runs through the rest of scripture.",
+    "sources": ["Levenson, The Death and Resurrection of the Beloved Son"]
+  },
+  {
+    "id": "joseph-egypt",
+    "title": "Joseph in Egypt's Middle Kingdom",
+    "refs": ["Genesis 37", "Genesis 41"],
+    "body": "Joseph's rise to vizier fits the Hyksos period (c. 1700 BC) when Semitic peoples held significant power in Egypt. Egyptian texts describe seven-year famines and grain storage administrators with exactly Joseph's profile. Joseph's coat ('of many colors' or 'long-sleeved') marked him as one not destined for field labor — the favored heir. The story is a meditation on providence: 'Ye thought evil against me; but God meant it unto good' (Gen 50:20).",
+    "sources": ["Hoffmeier, Israel in Egypt"]
   },
   {
     "id": "exodus-egypt",
@@ -21,6 +42,34 @@
     "sources": ["Hoffmeier, Israel in Egypt"]
   },
   {
+    "id": "sinai-covenant",
+    "title": "The Sinai covenant and ancient treaties",
+    "refs": ["Exodus 19", "Exodus 20", "Deuteronomy 5"],
+    "body": "The structure of Exodus and Deuteronomy mirrors second-millennium Hittite suzerain-vassal treaties: preamble naming the great king, historical prologue, stipulations, blessings/curses, witnesses, deposit. This treaty form was OUT of use by the first millennium — strong evidence Exodus was written when it claims to have been. The Ten Commandments aren't an arbitrary code; they're the terms of a covenant between Israel and its rescuing King.",
+    "sources": ["Kline, Treaty of the Great King"]
+  },
+  {
+    "id": "tabernacle-temple",
+    "title": "Tabernacle, then Temple",
+    "refs": ["Exodus 25", "1 Kings 6"],
+    "body": "The tabernacle (a portable tent shrine) and later the temple in Jerusalem follow the same three-zone pattern: outer court, holy place, most holy place. This mirrors the Garden of Eden's geography (Eden as cosmic mountain, with God's presence at the top). The point: God is re-creating sacred space where heaven and earth meet — a theme that climaxes in Revelation 21 with the New Jerusalem as a perfect cube (like the Most Holy Place).",
+    "sources": ["Beale, The Temple and the Church's Mission"]
+  },
+  {
+    "id": "conquest-canaan",
+    "title": "The conquest and Canaanite culture",
+    "refs": ["Joshua 1", "Joshua 6"],
+    "body": "The Canaanites Israel encountered practiced ritual prostitution, child sacrifice (to Molech and Baal), and divination. The Bible frames the conquest not as ethnic cleansing but as judgment after 400+ years of warning (Gen 15:16: 'the iniquity of the Amorites is not yet full'). The Rahab story (Joshua 2) shows the conquest was always about response to God, not race — any Canaanite who turned to Yahweh was preserved.",
+    "sources": ["Copan, Is God a Moral Monster?"]
+  },
+  {
+    "id": "judges-cycle",
+    "title": "The pattern of Judges",
+    "refs": ["Judges 2", "Judges 6"],
+    "body": "Judges runs in a tragic cycle: Israel sins → God allows oppression → Israel cries out → God raises a judge → peace → cycle repeats, getting worse each time. The book's refrain — 'every man did that which was right in his own eyes' — sets up the need for kingship. The judges themselves descend in moral character from Othniel (model leader) to Samson (impulsive and compromised), making the argument that human leadership alone can't fix the human heart.",
+    "sources": ["Provan/Long/Longman, A Biblical History of Israel"]
+  },
+  {
     "id": "david-jerusalem",
     "title": "Why David took Jerusalem",
     "refs": ["2 Samuel 5"],
@@ -28,24 +77,108 @@
     "sources": ["Provan/Long/Longman, A Biblical History of Israel"]
   },
   {
+    "id": "solomon-temple",
+    "title": "Solomon's temple",
+    "refs": ["1 Kings 6", "1 Kings 8"],
+    "body": "Solomon's temple (completed c. 957 BC) was modest by ancient Near Eastern standards in size, but extravagant in materials — Lebanese cedar, gold overlay, bronze pillars named Jachin ('he establishes') and Boaz ('in him is strength'). It stood for ~370 years before Babylon destroyed it in 586 BC. The dedication prayer (1 Kings 8) is striking: Solomon foresees exile and asks that prayers offered toward this place from a foreign land would be heard.",
+    "sources": ["Wright, The Mission of God"]
+  },
+  {
+    "id": "divided-kingdom",
+    "title": "The divided kingdom",
+    "refs": ["1 Kings 12"],
+    "body": "After Solomon, Israel split (930 BC): ten northern tribes ('Israel,' capital Samaria) and Judah + Benjamin in the south ('Judah,' capital Jerusalem). The north had 19 kings, every one of them evaluated as 'evil.' Judah had 20 kings — a mix, with some genuine reformers (Hezekiah, Josiah). The prophets ministered to both — Amos and Hosea in the north, Isaiah and Jeremiah in the south.",
+    "sources": ["Hill & Walton, A Survey of the Old Testament"]
+  },
+  {
+    "id": "assyria-fall",
+    "title": "Assyria takes the north (722 BC)",
+    "refs": ["2 Kings 17"],
+    "body": "Assyria — the Nazi Germany of the ancient world for its scale of violence — deported the northern tribes in 722 BC after a three-year siege of Samaria. They mixed conquered peoples to break ethnic identity; the result was the Samaritans of Jesus' day. The northern kingdom never returned. Hosea, Amos, and Micah had warned this would happen if Israel kept turning from God.",
+    "sources": ["Provan/Long/Longman, A Biblical History of Israel"]
+  },
+  {
     "id": "exile-babylon",
     "title": "Exile in Babylon and how the prophets read it",
-    "refs": ["Daniel 1", "Ezekiel 1"],
+    "refs": ["Daniel 1", "Ezekiel 1", "Jeremiah 29"],
     "body": "Babylon under Nebuchadnezzar deported Judah's elite in three waves (605, 597, 586 BC), destroying the Temple in 586. Far from being random punishment, prophets like Jeremiah and Ezekiel framed the exile as covenant consequence — and also covenant continuation. Out of exile came the synagogue, the codification of scripture, and a hope of return that shaped the rest of Jewish history.",
     "sources": ["Wright, The New Testament and the People of God, ch. 6"]
   },
   {
+    "id": "return-rebuild",
+    "title": "Return and rebuild",
+    "refs": ["Ezra 1", "Nehemiah 1"],
+    "body": "Cyrus of Persia conquered Babylon in 539 BC and immediately issued the famous decree (recorded on the Cyrus Cylinder) freeing exiled peoples to return home. Zerubbabel led the first return (538 BC); Ezra came with reform (458 BC); Nehemiah rebuilt Jerusalem's walls (445 BC). The post-exilic community was smaller, poorer, and under foreign rule — yet from this remnant came the synagogue, the canon, and ultimately the Messiah.",
+    "sources": ["Yamauchi, Persia and the Bible"]
+  },
+  {
+    "id": "intertestamental",
+    "title": "The 400 silent years",
+    "refs": ["Malachi 4", "Matthew 1"],
+    "body": "Between Malachi and Matthew, the world changed: Alexander the Great spread Greek language and culture (so the New Testament could be written in Koine Greek and understood from Britain to India). The Maccabean revolt (167 BC) reclaimed the Temple from Antiochus IV (the source of Hanukkah). Rome took Palestine in 63 BC. By Jesus' birth, the synagogue system, Pharisaic Judaism, and messianic expectation were all in place.",
+    "sources": ["Ferguson, Backgrounds of Early Christianity"]
+  },
+  {
     "id": "second-temple",
     "title": "The world Jesus was born into",
-    "refs": ["Matthew 1", "Luke 2"],
+    "refs": ["Matthew 1", "Matthew 2", "Luke 2"],
     "body": "First-century Judea was an occupied province under Rome, with Herod the Great's rebuilt Temple as its religious center. Multiple Jewish groups competed for the future: Pharisees pursued holiness through Torah, Sadducees ran the Temple, Essenes withdrew to the desert, Zealots plotted revolution. Into this charged setting Jesus was born — and his teaching answered each group's hope differently than any of them expected.",
     "sources": ["Wright, Jesus and the Victory of God"]
   },
   {
+    "id": "messianic-expectation",
+    "title": "What did 'Messiah' mean to first-century Jews?",
+    "refs": ["Matthew 1", "John 4"],
+    "body": "By Jesus' day, most Jews expected a political/military Messiah — a Davidic king who would expel Rome and restore Israel's independence. Some expected a priestly Messiah (Qumran community), some a prophet-Messiah like Moses. NO ONE expected a Messiah who would suffer, die, and rise. Jesus deliberately reframed the title — quoting Isaiah's suffering servant and Daniel's Son of Man — to redefine messiahship in terms his contemporaries weren't ready for.",
+    "sources": ["Wright, The Resurrection of the Son of God"]
+  },
+  {
+    "id": "sermon-on-mount",
+    "title": "Why the Sermon on the Mount was radical",
+    "refs": ["Matthew 5", "Matthew 6", "Matthew 7"],
+    "body": "The Beatitudes inverted every ancient honor code: poor in spirit, mourners, meek, persecuted — these are 'blessed'? In a culture that valued strength, wealth, and family honor above all, Jesus declared God's favor rested on the opposite. The 'You have heard… but I say' formula in Matthew 5 wasn't abolishing the Law but driving it deeper: not just no murder, but no contempt; not just no adultery, but no lust.",
+    "sources": ["Stott, The Sermon on the Mount"]
+  },
+  {
+    "id": "crucifixion",
+    "title": "Crucifixion and the cross's offense",
+    "refs": ["Matthew 27", "John 19"],
+    "body": "Crucifixion was Rome's most degrading execution — reserved for slaves and rebels, designed for maximum public humiliation. Roman citizens were exempt by law. To Jews, anyone 'hanged on a tree' was under God's curse (Deut 21:23). For first-century minds, 'crucified Messiah' was a contradiction in terms — which is why Paul calls it 'a stumbling block to Jews, foolishness to Greeks' (1 Cor 1:23). The cross only makes sense in light of the resurrection.",
+    "sources": ["Hengel, Crucifixion"]
+  },
+  {
+    "id": "resurrection-evidence",
+    "title": "Resurrection: what early sources actually claim",
+    "refs": ["Luke 24", "1 Corinthians 15"],
+    "body": "1 Corinthians 15:3-8 contains a creed Paul says he 'received' — scholars across the spectrum date this to within 5 years of the crucifixion. It names eyewitnesses, including 500 at once 'most of whom are still alive' — an invitation to verify. The earliest opposition (Jewish and Roman) never disputed the empty tomb; they argued about how it got that way. Something happened that the early church staked everything on.",
+    "sources": ["Wright, The Resurrection of the Son of God"]
+  },
+  {
+    "id": "pentecost",
+    "title": "Pentecost: the Spirit poured out",
+    "refs": ["Acts 2"],
+    "body": "Pentecost (Greek for '50th') was a Jewish harvest festival held 50 days after Passover. Jerusalem swelled with pilgrims from across the Roman world. When the Spirit fell on the disciples and they spoke in languages they hadn't learned, it was a reversal of Babel (Gen 11): instead of confusion scattering people, the gospel united them across language barriers. The church was launched into mission on day one.",
+    "sources": ["Wright, Acts for Everyone"]
+  },
+  {
     "id": "pauls-roads",
     "title": "Roman roads and the spread of the gospel",
-    "refs": ["Acts 13", "Acts 16"],
+    "refs": ["Acts 13", "Acts 16", "Romans 1"],
     "body": "Pax Romana gave the first-century church an unprecedented infrastructure: paved roads from Britain to the Euphrates, a single trade language (Koine Greek), and shipping lanes across the Mediterranean. Paul's missionary journeys followed these roads, planting churches in commercial hubs (Corinth, Ephesus, Thessalonica) that then radiated influence outward. The gospel went viral on Roman infrastructure.",
     "sources": ["Meeks, The First Urban Christians"]
+  },
+  {
+    "id": "early-church-life",
+    "title": "What the early church actually looked like",
+    "refs": ["Acts 2", "1 Corinthians 11"],
+    "body": "First-century Christians met in homes (no church buildings until the 200s), shared meals (the Lord's Supper began as a full dinner), pooled resources for the poor, and met under suspicion from both Jewish and Roman authorities. Most were slaves, women, and the urban poor — Paul notes 'not many noble' (1 Cor 1:26). Yet within 300 years, this fringe movement became the official religion of the Roman Empire.",
+    "sources": ["Stark, The Rise of Christianity"]
+  },
+  {
+    "id": "revelation-context",
+    "title": "Why Revelation looks so strange",
+    "refs": ["Revelation 1", "Revelation 13"],
+    "body": "Revelation belongs to a Jewish genre called 'apocalyptic' — symbolic visions written in code for persecuted communities (cf. Daniel, parts of Ezekiel). Written under Domitian's persecution (~95 AD), it encoded political critique of Rome ('the beast') in imagery hostile readers couldn't easily pin down. To first hearers, Babylon = Rome; 666 = Nero Caesar (numerically). The point: empires fall, the Lamb wins, persecuted Christians keep faith.",
+    "sources": ["Bauckham, The Theology of the Book of Revelation"]
   }
 ]

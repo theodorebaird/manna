@@ -1,0 +1,317 @@
+[
+  {
+    "id": "mere-christianity",
+    "title": "Mere Christianity",
+    "author": "C.S. Lewis",
+    "year": 1952,
+    "category": "apologetics",
+    "summary": "Lewis's classic case for Christianity, originally delivered as BBC radio talks during WWII. Walks from basic moral law through the nature of God to Christian belief. The best one-volume answer to 'what do Christians actually believe?'",
+    "rec": "Start here if you're skeptical, curious, or want to give a friend something thoughtful."
+  },
+  {
+    "id": "screwtape-letters",
+    "title": "The Screwtape Letters",
+    "author": "C.S. Lewis",
+    "year": 1942,
+    "category": "spiritual-growth",
+    "summary": "Imagined letters from a senior demon to his apprentice on how to corrupt a young Christian. Brilliant, funny, and uncomfortably accurate about how temptation actually works in daily life.",
+    "rec": "Read slowly — a chapter a day. You'll see yourself."
+  },
+  {
+    "id": "problem-of-pain",
+    "title": "The Problem of Pain",
+    "author": "C.S. Lewis",
+    "year": 1940,
+    "category": "apologetics",
+    "summary": "Lewis tackles the oldest objection to God head-on: if He's good and powerful, why is there suffering? Honest, philosophically serious, and not flinching from the hardest cases.",
+    "rec": "When you're wrestling with the question, or want to wrestle with someone who is."
+  },
+  {
+    "id": "case-for-christ",
+    "title": "The Case for Christ",
+    "author": "Lee Strobel",
+    "year": 1998,
+    "category": "apologetics",
+    "summary": "A skeptical investigative journalist interviews scholars about the historical evidence for Jesus — His existence, resurrection, identity. Strobel went from atheist to believer through the research.",
+    "rec": "Best book to give a thinking skeptic. Strobel asks the questions a non-believer would."
+  },
+  {
+    "id": "case-for-creator",
+    "title": "The Case for a Creator",
+    "author": "Lee Strobel",
+    "year": 2004,
+    "category": "apologetics",
+    "summary": "Strobel turns his journalist's eye on the scientific evidence for God — cosmology, fine-tuning, biology, consciousness. Interviews researchers across disciplines.",
+    "rec": "For science-leaning skeptics, or anyone interested in faith-science conversations."
+  },
+  {
+    "id": "case-for-faith",
+    "title": "The Case for Faith",
+    "author": "Lee Strobel",
+    "year": 2000,
+    "category": "apologetics",
+    "summary": "Strobel takes on the eight objections most often raised against Christianity — suffering, miracles, hell, Old Testament violence, exclusivity, evolution, doubt, hypocrisy. Interviews scholars on each.",
+    "rec": "If a specific objection is keeping you (or someone) from faith, find it here."
+  },
+  {
+    "id": "wild-at-heart",
+    "title": "Wild at Heart",
+    "author": "John Eldredge",
+    "year": 2001,
+    "category": "men",
+    "summary": "Eldredge argues every man carries three deep desires — a battle to fight, an adventure to live, a beauty to rescue — and that the modern domesticated 'nice guy' is a counterfeit. Recovers a vision of masculine soul.",
+    "rec": "For Christian men who feel something is missing from how they've been told to be."
+  },
+  {
+    "id": "captivating",
+    "title": "Captivating",
+    "author": "John & Stasi Eldredge",
+    "year": 2005,
+    "category": "women",
+    "summary": "The companion to Wild at Heart, written for women. Three core desires of the feminine heart: to be romanced, to play an irreplaceable role in a great adventure, to unveil beauty. Calls women back to who God made them to be.",
+    "rec": "For women who've felt squeezed into roles that don't fit their deepest design."
+  },
+  {
+    "id": "waking-the-dead",
+    "title": "Waking the Dead",
+    "author": "John Eldredge",
+    "year": 2003,
+    "category": "spiritual-growth",
+    "summary": "On the heart as the wellspring of life — and the fierce spiritual battle to keep it alive in a world that numbs and steals. Combines pastoral counsel with battle imagery from scripture.",
+    "rec": "When you feel like you're going through the motions and need life poured back in."
+  },
+  {
+    "id": "sacred-romance",
+    "title": "The Sacred Romance",
+    "author": "Brent Curtis & John Eldredge",
+    "year": 1997,
+    "category": "spiritual-growth",
+    "summary": "A reframing of the Christian life as a love story rather than a moral checklist. God's pursuit of you is the deepest plot of your life. Beautifully written, theologically rich.",
+    "rec": "If the Christian life has started feeling like duty without delight."
+  },
+  {
+    "id": "bait-of-satan",
+    "title": "The Bait of Satan",
+    "author": "John Bevere",
+    "year": 1994,
+    "category": "spiritual-growth",
+    "summary": "On offense as the most effective trap the enemy uses on believers. Why we get easily offended, how we justify it, and how to break free into genuine forgiveness.",
+    "rec": "If you're carrying any unresolved hurt from another believer. Convicting in the best way."
+  },
+  {
+    "id": "fear-of-the-lord",
+    "title": "The Fear of the Lord",
+    "author": "John Bevere",
+    "year": 1997,
+    "category": "spiritual-growth",
+    "summary": "Recovers the biblical concept of 'fear of the Lord' — not terror, but reverent awe — as the foundation of wisdom, intimacy, and obedience. Counters the modern tendency to make God only friendly.",
+    "rec": "If your faith has lost its weight and you want to recover holy awe."
+  },
+  {
+    "id": "good-or-god",
+    "title": "Good or God?",
+    "author": "John Bevere",
+    "year": 2015,
+    "category": "spiritual-growth",
+    "summary": "Bevere argues we've confused 'good' with 'godly' — settling for a moralistic Christianity that lacks the power and obedience of the real thing. Calls believers to a deeper standard than nice.",
+    "rec": "When you sense your faith has gone soft and you want to be challenged."
+  },
+  {
+    "id": "fight-like-a-girl",
+    "title": "Fight Like a Girl",
+    "author": "Lisa Bevere",
+    "year": 2006,
+    "category": "women",
+    "summary": "Lisa Bevere on the unique strength, calling, and battles of Christian women. Practical, passionate, and rooted in scripture's vision of women as warriors, not decorations.",
+    "rec": "For Christian women navigating identity, marriage, motherhood, or calling."
+  },
+  {
+    "id": "girls-with-swords",
+    "title": "Girls With Swords",
+    "author": "Lisa Bevere",
+    "year": 2013,
+    "category": "women",
+    "summary": "How women can deploy the spiritual weapons God has given them — truth, prayer, the Word — for themselves, their families, and others. Practical training in spiritual warfare.",
+    "rec": "For women who want to move from defensive to offensive in their spiritual life."
+  },
+  {
+    "id": "without-rival",
+    "title": "Without Rival",
+    "author": "Lisa Bevere",
+    "year": 2016,
+    "category": "women",
+    "summary": "On comparison as the great thief of joy and confidence. Lisa Bevere shows how to find unshakable identity in being beloved by God, free from competing with other women.",
+    "rec": "If you find yourself measuring your life against everyone else's."
+  },
+  {
+    "id": "saints-sons-and-daughters",
+    "title": "Saints, Sons, and Daughters",
+    "author": "Addison Bevere",
+    "year": 2020,
+    "category": "spiritual-growth",
+    "summary": "Addison Bevere on recovering the biblical understanding of the believer's true identity — saint by calling, son or daughter by adoption — as the antidote to spiritual exhaustion and impostor syndrome.",
+    "rec": "If you're tired of trying to earn what God has already given you."
+  },
+  {
+    "id": "words-from-the-fire",
+    "title": "Words From the Fire",
+    "author": "Albert Mohler",
+    "year": 2009,
+    "category": "doctrine",
+    "summary": "A book-length exposition of the Ten Commandments — not as rules from a distant past but as the moral architecture of human flourishing. Theologically rigorous, pastorally rich.",
+    "rec": "When you want to think deeper about the Law and what it reveals about God."
+  },
+  {
+    "id": "knowing-god",
+    "title": "Knowing God",
+    "author": "J.I. Packer",
+    "year": 1973,
+    "category": "doctrine",
+    "summary": "The classic 20th-century work on what it means to know God personally and theologically. Each chapter unfolds an attribute of God with depth and warmth.",
+    "rec": "One of the most important Christian books of the last century. Read slowly."
+  },
+  {
+    "id": "the-pursuit-of-god",
+    "title": "The Pursuit of God",
+    "author": "A.W. Tozer",
+    "year": 1948,
+    "category": "spiritual-growth",
+    "summary": "Tozer's hunger for God's presence pours out of every page. Calls believers past comfortable religion to a real, abiding nearness with God.",
+    "rec": "Short, intense, and decades old — but reads like it was written this morning."
+  },
+  {
+    "id": "the-cost-of-discipleship",
+    "title": "The Cost of Discipleship",
+    "author": "Dietrich Bonhoeffer",
+    "year": 1937,
+    "category": "spiritual-growth",
+    "summary": "Bonhoeffer's exposition of the Sermon on the Mount, written under the rising Nazi regime. Coined the phrase 'cheap grace.' He paid the cost himself — executed in 1945 for opposing Hitler.",
+    "rec": "When you want to be confronted with what following Jesus actually demands."
+  },
+  {
+    "id": "life-together",
+    "title": "Life Together",
+    "author": "Dietrich Bonhoeffer",
+    "year": 1939,
+    "category": "spiritual-growth",
+    "summary": "Bonhoeffer on Christian community — its joys, its disciplines, and the danger of confusing the ideal community with the real one. Written from his experience leading an underground seminary.",
+    "rec": "Read with your small group, marriage, or roommates. Short, practical, profound."
+  },
+  {
+    "id": "the-reason-for-god",
+    "title": "The Reason for God",
+    "author": "Tim Keller",
+    "year": 2008,
+    "category": "apologetics",
+    "summary": "Keller addresses the seven biggest objections modern skeptics have to Christianity — exclusivity, suffering, hell, the church's failures — then gives the positive case. Pastoral, brilliant, honest.",
+    "rec": "Best contemporary apologetic for educated skeptics in a secular culture."
+  },
+  {
+    "id": "prayer-keller",
+    "title": "Prayer",
+    "author": "Tim Keller",
+    "year": 2014,
+    "category": "spiritual-growth",
+    "summary": "Keller distills the wisdom of centuries on prayer — what it is, how to do it, what it does to us. Pairs deep theology with practical method (the daily 'PRO' approach).",
+    "rec": "When your prayer life feels dry, rote, or just absent."
+  },
+  {
+    "id": "the-meaning-of-marriage",
+    "title": "The Meaning of Marriage",
+    "author": "Tim & Kathy Keller",
+    "year": 2011,
+    "category": "marriage",
+    "summary": "The Kellers on what marriage is for, how the gospel changes it, and how to actually do the long obedience of a faithful covenant. Equally good for engaged, newlywed, or 30-years-in.",
+    "rec": "Best Christian book on marriage published in a generation."
+  },
+  {
+    "id": "every-mans-battle",
+    "title": "Every Man's Battle",
+    "author": "Stephen Arterburn & Fred Stoeker",
+    "year": 2000,
+    "category": "men",
+    "summary": "Practical, frank handbook on sexual purity for Christian men — particularly the war over the eyes and mind. Includes concrete strategies and accountability frameworks.",
+    "rec": "For Christian men of any age dealing with lust or pornography. Read with a brother."
+  },
+  {
+    "id": "boundaries",
+    "title": "Boundaries",
+    "author": "Henry Cloud & John Townsend",
+    "year": 1992,
+    "category": "spiritual-growth",
+    "summary": "Christian psychologists on how to know where you end and others begin — saying no without guilt, taking responsibility for your life, healthy relationships. Biblically grounded.",
+    "rec": "If you struggle with people-pleasing, codependence, or feeling responsible for others' emotions."
+  },
+  {
+    "id": "celebration-of-discipline",
+    "title": "Celebration of Discipline",
+    "author": "Richard Foster",
+    "year": 1978,
+    "category": "spiritual-growth",
+    "summary": "A guide to twelve spiritual disciplines — prayer, fasting, study, simplicity, solitude, submission, service, confession, worship, guidance, celebration, meditation. Practical and inviting.",
+    "rec": "When you want to add structure and depth to spiritual practice."
+  },
+  {
+    "id": "humility",
+    "title": "Humility",
+    "author": "Andrew Murray",
+    "year": 1895,
+    "category": "spiritual-growth",
+    "summary": "A short, piercing book on humility as the root virtue of Christian life — and the hardest one to grow. Murray writes from deep experience of trying to die to self.",
+    "rec": "Pocket-sized but heavy. Read a chapter and sit with it for a day."
+  },
+  {
+    "id": "redeeming-love",
+    "title": "Redeeming Love",
+    "author": "Francine Rivers",
+    "year": 1991,
+    "category": "fiction",
+    "summary": "A retelling of the book of Hosea set in California's 1850s gold rush. A prostitute and a godly farmer; the question is whether love can pursue someone through every layer of brokenness.",
+    "rec": "The best Christian novel of the last fifty years. Don't skip it because it's fiction."
+  },
+  {
+    "id": "this-present-darkness",
+    "title": "This Present Darkness",
+    "author": "Frank Peretti",
+    "year": 1986,
+    "category": "fiction",
+    "summary": "A fictional small town where spiritual warfare — angels, demons, prayer — plays out behind the visible drama. Made spiritual warfare imaginatively real for a generation of readers.",
+    "rec": "If you want to feel the unseen reality of prayer and intercession in your bones."
+  },
+  {
+    "id": "gentle-and-lowly",
+    "title": "Gentle and Lowly",
+    "author": "Dane Ortlund",
+    "year": 2020,
+    "category": "spiritual-growth",
+    "summary": "On the heart of Christ — gentle and lowly, drawn especially to the weary and the sinful. Drawn from Puritan writers (Sibbes, Goodwin, Owen) but warmly accessible.",
+    "rec": "If you've felt like Christ might be tired of you. He isn't. This book proves it."
+  },
+  {
+    "id": "spiritual-leadership",
+    "title": "Spiritual Leadership",
+    "author": "J. Oswald Sanders",
+    "year": 1967,
+    "category": "leadership",
+    "summary": "Classic Christian leadership book — what makes a leader after God's own heart. Studies biblical leaders and outlines the character, discipline, and prayer that mark godly leadership.",
+    "rec": "For anyone leading in church, ministry, business, or family."
+  },
+  {
+    "id": "crazy-love",
+    "title": "Crazy Love",
+    "author": "Francis Chan",
+    "year": 2008,
+    "category": "spiritual-growth",
+    "summary": "Chan confronts the lukewarm 'Sunday Christian' life and calls believers to actually take Jesus's words seriously. Uncomfortable, urgent, and short enough to finish.",
+    "rec": "When you suspect you've settled for a tame version of following Jesus."
+  },
+  {
+    "id": "what-jesus-demands",
+    "title": "What Jesus Demands from the World",
+    "author": "John Piper",
+    "year": 2006,
+    "category": "doctrine",
+    "summary": "Piper walks through 50 distinct commands Jesus gave in the Gospels — what He actually said we must do. A bracing antidote to vague 'spiritual' Christianity.",
+    "rec": "When you want to take what Jesus said seriously, command by command."
+  }
+]

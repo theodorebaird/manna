@@ -1,0 +1,152 @@
+[
+  {
+    "id": "morning",
+    "title": "Morning Prayer",
+    "category": "daily",
+    "icon": "sun",
+    "estimateMin": 2,
+    "intro": "A way to begin the day with God before the day begins demanding things of you.",
+    "body": "Heavenly Father, before this day begins to demand things of me, I come to You.\n\nThank You for the gift of waking. Thank You for breath, for the bed I rose from, for the simple grace of another morning. I did not earn it.\n\nLord, I give You today before I live it. I commit my plans into Your hands — and the moments I cannot plan. The people I will meet, the choices I will face, the words I will speak.\n\nLet me be slow to anger, quick to listen, gentle with the people closest to me, generous with those I do not yet know. Where I am tempted, lead me away. Where I am weary, carry me. Where I am proud, humble me before I have to be humbled.\n\nMake me useful to Your kingdom today, in things big or small. Help me to notice the person who needs a word of encouragement. Help me to love my family with patience.\n\nGo before me, walk beside me, follow behind me. In all things, may Your name be glorified in my life today.\n\nIn Jesus' name, Amen.",
+    "scriptures": ["Psalm 5:3", "Lamentations 3:22-23", "Psalm 90:14"]
+  },
+  {
+    "id": "evening",
+    "title": "Evening Prayer",
+    "category": "daily",
+    "icon": "moon",
+    "estimateMin": 3,
+    "intro": "A way to close the day — confessing, giving thanks, resting in God's care.",
+    "body": "Father, the day is done.\n\nI thank You for the things that went well — for laughter I shared, for problems that worked themselves out, for kindness I received and didn't earn. I see Your hand even where I almost missed it.\n\nI confess the things I did poorly. The sharp word I spoke. The promise I half-kept. The chance to be patient that I traded for being right. Forgive me, Lord. Wash me clean. Help me sleep without carrying tomorrow's worries into the night.\n\nGuard those I love through the dark hours. Bless those who suffer right now — the sick, the grieving, the afraid, the alone. Send them angels.\n\nLet me rest tonight, not because the world is safe, but because You are good. The same God who keeps the stars in motion is the One who watches over my sleep.\n\nInto Your hands I commend my spirit. Receive me until morning.\n\nIn Jesus' name, Amen.",
+    "scriptures": ["Psalm 4:8", "Psalm 31:5", "Proverbs 3:24"]
+  },
+  {
+    "id": "salvation",
+    "title": "Prayer of Salvation",
+    "category": "milestone",
+    "icon": "cross",
+    "estimateMin": 2,
+    "intro": "There are no magic words. But if you've never spoken to God before and want to turn to Jesus, this is a true and simple way to say what your heart is reaching for.",
+    "body": "God,\n\nI come to You knowing I cannot fix what I have broken on my own. I have lived for myself instead of You. I have done wrong, and I know it. I am sorry.\n\nI believe Jesus is Your Son. I believe He lived the life I could not live, died the death I deserved, and rose again on the third day. I believe His blood is enough to cover every wrong I have ever done.\n\nJesus, I turn from my old way of living and I turn to You. I receive You as my Savior and my Lord. Come into my heart. Make me new. I want to know You. I want to live for You.\n\nThank You for forgiving me. Thank You for loving me when I had nothing to offer. Thank You that nothing can ever separate me from Your love now.\n\nHoly Spirit, fill me. Teach me. Walk with me.\n\nI'm Yours.\n\nIn Jesus' name, Amen.",
+    "scriptures": ["Romans 10:9-10", "John 3:16", "Ephesians 2:8-9", "2 Corinthians 5:17"]
+  },
+  {
+    "id": "lords-prayer",
+    "title": "The Lord's Prayer",
+    "category": "biblical",
+    "icon": "scroll",
+    "estimateMin": 1,
+    "intro": "The prayer Jesus taught His disciples when they asked Him how to pray (Matthew 6:9-13).",
+    "body": "Our Father which art in heaven,\nHallowed be thy name.\n\nThy kingdom come,\nThy will be done in earth,\nas it is in heaven.\n\nGive us this day our daily bread.\n\nAnd forgive us our debts,\nas we forgive our debtors.\n\nAnd lead us not into temptation,\nbut deliver us from evil:\n\nFor thine is the kingdom,\nand the power, and the glory,\nfor ever.\n\nAmen.",
+    "scriptures": ["Matthew 6:9-13", "Luke 11:2-4"]
+  },
+  {
+    "id": "psalm-23",
+    "title": "Psalm 23 as Prayer",
+    "category": "biblical",
+    "icon": "scroll",
+    "estimateMin": 2,
+    "intro": "The most-prayed psalm in history. Pray it slowly, as your own.",
+    "body": "The LORD is my shepherd; I shall not want.\n\nHe maketh me to lie down in green pastures:\nHe leadeth me beside the still waters.\n\nHe restoreth my soul:\nHe leadeth me in the paths of righteousness for his name's sake.\n\nYea, though I walk through the valley of the shadow of death,\nI will fear no evil:\nfor thou art with me;\nthy rod and thy staff they comfort me.\n\nThou preparest a table before me in the presence of mine enemies:\nthou anointest my head with oil; my cup runneth over.\n\nSurely goodness and mercy shall follow me all the days of my life:\nand I will dwell in the house of the LORD for ever.\n\nAmen.",
+    "scriptures": ["Psalm 23"]
+  },
+  {
+    "id": "before-meals",
+    "title": "Before a Meal",
+    "category": "daily",
+    "icon": "utensils",
+    "estimateMin": 1,
+    "intro": "A simple grace to remember the Provider behind the provision.",
+    "body": "Father, thank You for this food.\n\nThank You for the hands that grew it and prepared it.\nThank You that we get to eat together.\n\nBless this meal to our bodies.\nBless those who do not have enough today.\nMake us mindful of Your goodness.\n\nIn Jesus' name, Amen.",
+    "scriptures": ["1 Timothy 4:4-5", "Matthew 14:19", "Psalm 145:15-16"]
+  },
+  {
+    "id": "for-anxiety",
+    "title": "When Anxious",
+    "category": "topical",
+    "icon": "wind",
+    "estimateMin": 2,
+    "intro": "When the chest tightens and the thoughts won't stop — a way to bring it to God in detail.",
+    "body": "Father, my heart is racing and I cannot stop thinking about what might happen. I name it now, before You:\n\n(Speak the thing aloud — the worry, the fear, the unknown.)\n\nLord, You said do not be anxious about anything. Forgive me for trying to carry this alone. I lay it down. I cannot fix it. I cannot foresee the future. But You can. You hold tomorrow.\n\nReplace this anxiety with Your peace — the peace that does not depend on my circumstances changing. Quiet my mind. Slow my breathing. Help me to trust You with the parts I cannot control.\n\nWhen the fear comes back tonight, remind me that I have already given this to You.\n\nIn Jesus' name, Amen.",
+    "scriptures": ["Philippians 4:6-7", "1 Peter 5:7", "Psalm 94:19"]
+  },
+  {
+    "id": "for-others",
+    "title": "Praying for Others",
+    "category": "intercession",
+    "icon": "users",
+    "estimateMin": 3,
+    "intro": "A frame for intercession — naming each person and the specific need.",
+    "body": "Father, I come to You on behalf of others.\n\n(Speak each name and lift them by name.)\n\nFor those who are sick, bring healing, comfort, and hope. Surround them with people who love them well.\n\nFor those who are grieving, sit with them in the dark hours. Be the nearness when words fail.\n\nFor those who don't yet know You, soften their hearts. Send someone into their path who can show them Your love.\n\nFor leaders in my country and in the church, give wisdom, integrity, and courage. Restrain evil. Bless what is good.\n\nFor those who are hungry, displaced, persecuted around the world tonight — be the God of the broken-hearted.\n\nI am only one person, but I trust You with what I cannot do.\n\nIn Jesus' name, Amen.",
+    "scriptures": ["1 Timothy 2:1-2", "James 5:16", "Ephesians 6:18"]
+  },
+  {
+    "id": "for-family",
+    "title": "For My Family",
+    "category": "intercession",
+    "icon": "users",
+    "estimateMin": 2,
+    "intro": "Lifting the people you live with to the only One who can truly tend their hearts.",
+    "body": "Father, You gave me this family. Help me love them well.\n\nFor my spouse (if married), give us patience with each other. Soften the places where we've grown cold. Help us forgive quickly. Renew our love.\n\nFor my children, guard their hearts and their friendships. Let them see Jesus in our home — not perfectly, but clearly. Give them wisdom for what they will face, even what I do not yet know they will face. Bring them to know You themselves.\n\nFor my parents and siblings, bless them. Heal old wounds. Knit us together.\n\nFor those in my family who do not know You, draw them. Send them the laborers and the kindness that will turn their eyes to You.\n\nMake my home a place of grace.\n\nIn Jesus' name, Amen.",
+    "scriptures": ["Joshua 24:15", "Deuteronomy 6:6-7", "Psalm 127:1"]
+  },
+  {
+    "id": "for-healing",
+    "title": "For Healing",
+    "category": "intercession",
+    "icon": "heart",
+    "estimateMin": 2,
+    "intro": "When you or someone you love is suffering in body.",
+    "body": "Lord Jesus, You are the great Physician. You touched the leper, opened blind eyes, raised the dead. The same hand that healed then heals now.\n\nI bring this body to You:\n\n(Speak the name and the condition.)\n\nWhere there is sickness, bring healing. Where there is pain, bring relief. Strengthen the medicine. Guide the doctors and nurses. Comfort the one who is tired of being ill.\n\nLord, I trust You for the outcome — whether You heal here or carry us home to a body finally made new. Either way, You are good. Either way, You are with us.\n\nGive us the faith to keep asking, the courage to keep trusting, and the peace that doesn't depend on the diagnosis.\n\nIn Jesus' name, Amen.",
+    "scriptures": ["James 5:14-15", "Psalm 103:2-3", "Exodus 15:26"]
+  },
+  {
+    "id": "for-direction",
+    "title": "For Direction & Wisdom",
+    "category": "topical",
+    "icon": "compass",
+    "estimateMin": 2,
+    "intro": "When you face a decision and need clarity.",
+    "body": "Father, I'm facing a decision and I need Your wisdom.\n\n(Name the decision honestly.)\n\nI confess that I want to figure it out on my own. I confess that I want guarantees that You don't always give. Forgive me for the times I have leaned on my own understanding.\n\nGive me wisdom from above — pure, peaceable, gentle. Open the right doors. Close the wrong ones. Speak through scripture as I read. Speak through the counsel of wise people who love me.\n\nWhen I am clear, give me courage to act. When I am still unclear, give me peace to wait.\n\nAbove all, I want what You want for my life, more than what I want for my life. Direct my paths.\n\nIn Jesus' name, Amen.",
+    "scriptures": ["James 1:5", "Proverbs 3:5-6", "Psalm 32:8"]
+  },
+  {
+    "id": "before-meeting",
+    "title": "Before a Hard Conversation",
+    "category": "topical",
+    "icon": "users",
+    "estimateMin": 1,
+    "intro": "A short prayer before walking into a meeting, a confrontation, or a conversation you've been dreading.",
+    "body": "Father, You know what I'm about to walk into.\n\nGive me a humble heart. Help me listen more than I speak. Take pride and defensiveness off the table.\n\nGuard my tongue. Let my words be gentle without being weak. Honest without being cruel.\n\nIf I am wrong, help me see it. If I am right, give me grace to hold it without contempt.\n\nMake peace where peace is possible. Where it isn't, help me leave the outcome with You.\n\nGo with me into the room.\n\nIn Jesus' name, Amen.",
+    "scriptures": ["James 1:19", "Proverbs 15:1", "Colossians 4:6"]
+  },
+  {
+    "id": "prayer-of-jabez",
+    "title": "The Prayer of Jabez",
+    "category": "biblical",
+    "icon": "scroll",
+    "estimateMin": 1,
+    "intro": "A small, bold prayer tucked into 1 Chronicles 4:10 — Jabez asking God for more than he had.",
+    "body": "Oh that thou wouldest bless me indeed,\nand enlarge my coast,\nand that thine hand might be with me,\nand that thou wouldest keep me from evil,\nthat it may not grieve me!\n\n(1 Chronicles 4:10)\n\nAmen.",
+    "scriptures": ["1 Chronicles 4:10"]
+  },
+  {
+    "id": "prayer-of-jesus",
+    "title": "Jesus' Prayer in Gethsemane",
+    "category": "biblical",
+    "icon": "cross",
+    "estimateMin": 1,
+    "intro": "The night before the cross, Jesus prayed honestly — and surrendered.",
+    "body": "O my Father,\nif it be possible,\nlet this cup pass from me:\n\nnevertheless not as I will,\nbut as thou wilt.\n\n(Matthew 26:39)\n\nAmen.",
+    "scriptures": ["Matthew 26:39", "Luke 22:42"]
+  },
+  {
+    "id": "thanksgiving",
+    "title": "Thanksgiving",
+    "category": "daily",
+    "icon": "gift",
+    "estimateMin": 2,
+    "intro": "Gratitude rewires the heart. A simple frame for thanksgiving.",
+    "body": "Father, I want to thank You today.\n\nThank You for who You are — holy, faithful, slow to anger, abundant in mercy.\n\nThank You for what You have done for me in Jesus — forgiven me, adopted me, given me Your Spirit, promised me a forever home with You.\n\nThank You for the small mercies of today:\n\n(Name three specific things — even small ones.)\n\nThank You for the hard things You have used to shape me. Even the things I would not have chosen, You have not wasted.\n\nLet a thankful heart become my default posture, not just a feeling I summon. I love You, Lord.\n\nIn Jesus' name, Amen.",
+    "scriptures": ["1 Thessalonians 5:18", "Psalm 100:4-5", "Colossians 3:17"]
+  }
+]
