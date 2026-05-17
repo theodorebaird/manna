@@ -59,6 +59,124 @@ export function getVoices(): Promise<SpeechSynthesisVoice[]> {
   });
 }
 
+// ---------- Voice metadata helpers (gender + accent + flag) ----------
+
+// Curated lists of known TTS voice names. Apple, Google, and Microsoft each
+// ship dozens of named voices; we map the most common ones here. Voices not
+// in either list default to 'other'.
+const MALE_NAMES = new Set([
+  'aaron', 'alex', 'albert', 'arthur', 'bahh', 'bruce', 'daniel', 'david',
+  'diego', 'enrique', 'fred', 'george', 'gordon', 'guy', 'hattori', 'james',
+  'jorge', 'juan', 'klaus', 'lars', 'lee', 'leon', 'luca', 'maged', 'magnus',
+  'mark', 'martin', 'matej', 'matteo', 'mateusz', 'miguel', 'milos', 'oliver',
+  'otoya', 'paolo', 'paul', 'pavel', 'pierre', 'reed', 'rishi', 'rocko',
+  'sean', 'stephan', 'stephane', 'tarik', 'thomas', 'tom', 'xander', 'yannick',
+  'yuri', 'ivan', 'anatoly', 'eddy', 'flo', 'grandpa', 'jamie', 'noah',
+  'ryan', 'matias', 'jacques'
+]);
+
+const FEMALE_NAMES = new Set([
+  'aaliyah', 'agnes', 'alice', 'allison', 'amelie', 'ana', 'anna', 'audrey',
+  'ava', 'carmit', 'catarina', 'damayanti', 'daria', 'elena', 'ellen', 'eva',
+  'evelyn', 'fatima', 'federica', 'fiona', 'flo', 'gabriela', 'grandma',
+  'hazel', 'helena', 'inés', 'ines', 'iveta', 'joana', 'joelle', 'kanya',
+  'karen', 'kate', 'kathy', 'kyoko', 'laila', 'laura', 'lekha', 'libby',
+  'luciana', 'magdalena', 'mariam', 'mariska', 'martha', 'mei-jia', 'melina',
+  'milena', 'monica', 'moira', 'nicky', 'nora', 'paulina', 'rishi', 'rocko',
+  'sabina', 'samantha', 'sara', 'satu', 'serena', 'sin-ji', 'soumya', 'susan',
+  'tessa', 'ting-ting', 'trinoids', 'vani', 'veena', 'vicki', 'victoria',
+  'wendy', 'whisper', 'yelda', 'yuna', 'zira', 'zosia', 'zuzana', 'tatyana',
+  'milana', 'milena', 'sandy', 'shelley', 'reed', 'maria'
+]);
+
+export function inferGender(voice: SpeechSynthesisVoice): 'female' | 'male' | 'other' {
+  const first = voice.name.toLowerCase().split(/[\s(,_-]/)[0];
+  if (FEMALE_NAMES.has(first)) return 'female';
+  if (MALE_NAMES.has(first)) return 'male';
+  return 'other';
+}
+
+// Friendly labels for common BCP 47 language tags
+const ACCENT_LABELS: Record<string, string> = {
+  'en-us': 'American English',  'en-gb': 'British English',
+  'en-au': 'Australian English', 'en-ie': 'Irish English',
+  'en-in': 'Indian English',     'en-za': 'South African English',
+  'en-ca': 'Canadian English',   'en-nz': 'New Zealand English',
+  'en-sg': 'Singaporean English',
+  'es-es': 'Spanish (Spain)',    'es-mx': 'Spanish (Mexico)',
+  'es-us': 'Spanish (US)',       'es-ar': 'Spanish (Argentina)',
+  'es-cl': 'Spanish (Chile)',    'es-co': 'Spanish (Colombia)',
+  'fr-fr': 'French',             'fr-ca': 'French (Canada)',
+  'de-de': 'German',             'de-at': 'German (Austria)',
+  'it-it': 'Italian',            'pt-br': 'Portuguese (Brazil)',
+  'pt-pt': 'Portuguese (Portugal)',
+  'ja-jp': 'Japanese',           'ko-kr': 'Korean',
+  'zh-cn': 'Chinese (Mandarin)', 'zh-hk': 'Cantonese',
+  'zh-tw': 'Chinese (Taiwan)',
+  'ru-ru': 'Russian',            'ar-sa': 'Arabic',
+  'tr-tr': 'Turkish',            'pl-pl': 'Polish',
+  'nl-nl': 'Dutch',              'nl-be': 'Dutch (Belgium)',
+  'sv-se': 'Swedish',            'da-dk': 'Danish',
+  'fi-fi': 'Finnish',            'nb-no': 'Norwegian',
+  'no-no': 'Norwegian',
+  'cs-cz': 'Czech',              'el-gr': 'Greek',
+  'he-il': 'Hebrew',             'th-th': 'Thai',
+  'vi-vn': 'Vietnamese',         'hi-in': 'Hindi',
+  'id-id': 'Indonesian',         'ms-my': 'Malay',
+  'ro-ro': 'Romanian',           'sk-sk': 'Slovak',
+  'uk-ua': 'Ukrainian',          'hu-hu': 'Hungarian',
+  'hr-hr': 'Croatian',           'bg-bg': 'Bulgarian',
+  'ca-es': 'Catalan'
+};
+
+const FLAG_EMOJI: Record<string, string> = {
+  'en-us': '🇺🇸', 'en-gb': '🇬🇧', 'en-au': '🇦🇺', 'en-ie': '🇮🇪',
+  'en-in': '🇮🇳', 'en-za': '🇿🇦', 'en-ca': '🇨🇦', 'en-nz': '🇳🇿',
+  'en-sg': '🇸🇬',
+  'es-es': '🇪🇸', 'es-mx': '🇲🇽', 'es-us': '🇺🇸', 'es-ar': '🇦🇷',
+  'es-cl': '🇨🇱', 'es-co': '🇨🇴',
+  'fr-fr': '🇫🇷', 'fr-ca': '🇨🇦',
+  'de-de': '🇩🇪', 'de-at': '🇦🇹',
+  'it-it': '🇮🇹', 'pt-br': '🇧🇷', 'pt-pt': '🇵🇹',
+  'ja-jp': '🇯🇵', 'ko-kr': '🇰🇷',
+  'zh-cn': '🇨🇳', 'zh-hk': '🇭🇰', 'zh-tw': '🇹🇼',
+  'ru-ru': '🇷🇺', 'ar-sa': '🇸🇦', 'tr-tr': '🇹🇷',
+  'pl-pl': '🇵🇱', 'nl-nl': '🇳🇱', 'nl-be': '🇧🇪',
+  'sv-se': '🇸🇪', 'da-dk': '🇩🇰', 'fi-fi': '🇫🇮',
+  'nb-no': '🇳🇴', 'no-no': '🇳🇴',
+  'cs-cz': '🇨🇿', 'el-gr': '🇬🇷', 'he-il': '🇮🇱',
+  'th-th': '🇹🇭', 'vi-vn': '🇻🇳', 'hi-in': '🇮🇳',
+  'id-id': '🇮🇩', 'ms-my': '🇲🇾', 'ro-ro': '🇷🇴',
+  'sk-sk': '🇸🇰', 'uk-ua': '🇺🇦', 'hu-hu': '🇭🇺',
+  'hr-hr': '🇭🇷', 'bg-bg': '🇧🇬', 'ca-es': '🇪🇸'
+};
+
+const LANG_FAMILY: Record<string, string> = {
+  en: 'English', es: 'Spanish', fr: 'French', de: 'German', it: 'Italian',
+  pt: 'Portuguese', ja: 'Japanese', ko: 'Korean', zh: 'Chinese', ru: 'Russian',
+  ar: 'Arabic', tr: 'Turkish', pl: 'Polish', nl: 'Dutch', sv: 'Swedish',
+  da: 'Danish', fi: 'Finnish', no: 'Norwegian', nb: 'Norwegian', cs: 'Czech',
+  el: 'Greek', he: 'Hebrew', th: 'Thai', vi: 'Vietnamese', hi: 'Hindi',
+  id: 'Indonesian', ms: 'Malay', ro: 'Romanian', sk: 'Slovak', uk: 'Ukrainian',
+  hu: 'Hungarian', hr: 'Croatian', bg: 'Bulgarian', ca: 'Catalan'
+};
+
+export function getAccentLabel(lang: string): string {
+  const key = lang.toLowerCase();
+  if (ACCENT_LABELS[key]) return ACCENT_LABELS[key];
+  // Fall back to the family name
+  const base = key.split('-')[0];
+  return LANG_FAMILY[base] ?? lang;
+}
+
+export function getFlagEmoji(lang: string): string {
+  const key = lang.toLowerCase();
+  if (FLAG_EMOJI[key]) return FLAG_EMOJI[key];
+  // Try without region
+  const base = key.split('-')[0];
+  return FLAG_EMOJI[`${base}-${base}`] ?? '🌐';
+}
+
 function findVoiceByURI(uri: string | null | undefined): SpeechSynthesisVoice | null {
   if (!uri || !isSupported()) return null;
   // Try cached first, then a fresh fetch

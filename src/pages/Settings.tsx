@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Sun, Moon, Monitor, Type, Trash2, Info, HelpCircle, ChevronRight, BookOpen, RefreshCw, Loader2, CheckCircle2, XCircle, X as XIcon, Volume2, Play } from 'lucide-react';
-import { Speaker, getVoices, isSupported as ttsSupported } from '../lib/tts';
+import { Speaker, getVoices, isSupported as ttsSupported, inferGender, getAccentLabel, getFlagEmoji } from '../lib/tts';
 import { useTheme, type ThemeMode } from '../components/ThemeProvider';
 import { db, getSettings, updateSettings, type Settings as DBSettings } from '../db/db';
 import { useScripture, TRANSLATIONS, type TranslationId } from '../components/ScriptureProvider';
@@ -20,8 +20,8 @@ export default function Settings() {
     if (!ttsSupported()) { setVoicesLoading(false); return; }
     (async () => {
       const v = await getVoices();
-      const englishVoices = v.filter(x => x.lang.toLowerCase().startsWith('en'));
-      setVoices(englishVoices.length ? englishVoices : v);
+      // Show ALL voices (any language). User can filter by gender / accent in the picker.
+      setVoices(v);
       setVoicesLoading(false);
     })();
   }, []);
@@ -240,6 +240,8 @@ export default function Settings() {
   );
 }
 
+type GenderFilter = 'all' | 'female' | 'male';
+
 function VoiceCard({
   voices, loading, currentVoiceURI, currentRate, onPickVoice, onChangeRate
 }: {
@@ -252,6 +254,7 @@ function VoiceCard({
 }) {
   const [testing, setTesting] = useState<string | null>(null);
   const testSpeaker = useState(() => new Speaker())[0];
+  const [gender, setGender] = useState<GenderFilter>('all');
 
   if (!ttsSupported()) {
     return (
@@ -285,6 +288,33 @@ function VoiceCard({
     { label: 'Faster', value: 1.5 }
   ];
 
+  // Filter by gender (when 'all', show every voice)
+  const filtered = gender === 'all'
+    ? voices
+    : voices.filter(v => inferGender(v) === gender);
+
+  // Group filtered voices by accent label, then sort groups alphabetically.
+  // English variants are pinned to the top.
+  const grouped = new Map<string, SpeechSynthesisVoice[]>();
+  for (const v of filtered) {
+    const label = getAccentLabel(v.lang);
+    if (!grouped.has(label)) grouped.set(label, []);
+    grouped.get(label)!.push(v);
+  }
+  const groupKeys = [...grouped.keys()].sort((a, b) => {
+    const aIsEn = a.includes('English');
+    const bIsEn = b.includes('English');
+    if (aIsEn && !bIsEn) return -1;
+    if (!aIsEn && bIsEn) return 1;
+    return a.localeCompare(b);
+  });
+
+  const counts = {
+    all: voices.length,
+    female: voices.filter(v => inferGender(v) === 'female').length,
+    male: voices.filter(v => inferGender(v) === 'male').length
+  };
+
   return (
     <div className="card space-y-4">
       <div className="section-label flex items-center gap-1.5"><Volume2 size={14} /> Read aloud — voice</div>
@@ -309,12 +339,39 @@ function VoiceCard({
       </div>
 
       <div className="space-y-2">
+        <div className="text-xs text-ink-500 dark:text-ink-300/70">Gender</div>
+        <div className="grid grid-cols-3 gap-1 p-1 rounded-2xl bg-ink-100/70 dark:bg-ink-800/70 border border-gold-100 dark:border-ink-700">
+          {([
+            ['all',    'All',     counts.all],
+            ['female', '♀ Female', counts.female],
+            ['male',   '♂ Male',   counts.male]
+          ] as const).map(([g, label, n]) => (
+            <button
+              key={g}
+              onClick={() => setGender(g)}
+              className={`py-2 rounded-xl text-xs font-semibold transition flex flex-col items-center justify-center gap-0.5 ${
+                gender === g ? 'bg-white dark:bg-ink-700 text-gold-700 dark:text-gold-300 shadow-soft' : 'text-ink-600 dark:text-ink-300'
+              }`}
+            >
+              <span>{label}</span>
+              <span className="text-[10px] opacity-70 font-normal">{n}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-2">
         <div className="text-xs text-ink-500 dark:text-ink-300/70">Voice</div>
         {loading && <div className="text-sm text-ink-500 italic">Loading voices…</div>}
         {!loading && voices.length === 0 && (
           <div className="text-sm text-ink-500 italic">No voices found on this device.</div>
         )}
-        <div className="space-y-1.5 max-h-80 overflow-y-auto pr-1">
+        {!loading && filtered.length === 0 && voices.length > 0 && (
+          <div className="text-sm text-ink-500 italic">No {gender} voices detected. Try "All".</div>
+        )}
+
+        <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
+          {/* System default — always shown at top */}
           <button
             onClick={() => onPickVoice(null)}
             className={`w-full text-left px-3 py-2 rounded-xl border transition flex items-center justify-between gap-2 ${
@@ -335,42 +392,61 @@ function VoiceCard({
               <Play size={14} className={testing === 'default' ? 'animate-pulse' : ''} />
             </button>
           </button>
-          {voices.map(voice => {
-            const v = voice;
-            const active = currentVoiceURI === v.voiceURI;
-            return (
-              <button
-                key={v.voiceURI}
-                onClick={() => onPickVoice(v.voiceURI)}
-                className={`w-full text-left px-3 py-2 rounded-xl border transition flex items-center justify-between gap-2 ${
-                  active
-                    ? 'border-gold-500 bg-gold-50 dark:bg-ink-700'
-                    : 'border-gold-100 dark:border-ink-700 hover:bg-gold-50 dark:hover:bg-ink-700'
-                }`}
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="font-medium text-sm text-ink-800 dark:text-ink-100 truncate">
-                    {v.name}
-                  </div>
-                  <div className="text-[11px] text-ink-500 dark:text-ink-300/70">
-                    {v.lang}{v.localService ? ' · offline' : ' · online'}
-                  </div>
-                </div>
-                <button
-                  onClick={e => { e.stopPropagation(); test(v); }}
-                  className="text-gold-700 dark:text-gold-400 px-2 py-1 rounded hover:bg-gold-100 dark:hover:bg-ink-600 flex-shrink-0"
-                  title="Test"
-                >
-                  <Play size={14} className={testing === v.voiceURI ? 'animate-pulse' : ''} />
-                </button>
-              </button>
-            );
-          })}
+
+          {groupKeys.map(group => (
+            <div key={group} className="space-y-1">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-300/70 px-1 flex items-center gap-1.5">
+                <span>{getFlagEmoji(grouped.get(group)![0].lang)}</span>
+                <span>{group}</span>
+                <span className="opacity-60">· {grouped.get(group)!.length}</span>
+              </div>
+              {grouped.get(group)!.map(v => {
+                const active = currentVoiceURI === v.voiceURI;
+                const g = inferGender(v);
+                return (
+                  <button
+                    key={v.voiceURI}
+                    onClick={() => onPickVoice(v.voiceURI)}
+                    className={`w-full text-left px-3 py-2 rounded-xl border transition flex items-center justify-between gap-2 ${
+                      active
+                        ? 'border-gold-500 bg-gold-50 dark:bg-ink-700'
+                        : 'border-gold-100 dark:border-ink-700 hover:bg-gold-50 dark:hover:bg-ink-700'
+                    }`}
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="font-medium text-sm text-ink-800 dark:text-ink-100 truncate flex items-center gap-1.5">
+                        {g === 'female' && <span className="text-rose-500" title="Female">♀</span>}
+                        {g === 'male' && <span className="text-sky-600 dark:text-sky-400" title="Male">♂</span>}
+                        {v.name}
+                      </div>
+                      <div className="text-[11px] text-ink-500 dark:text-ink-300/70">
+                        {v.lang}{v.localService ? ' · offline' : ' · online'}
+                      </div>
+                    </div>
+                    <button
+                      onClick={e => { e.stopPropagation(); test(v); }}
+                      className="text-gold-700 dark:text-gold-400 px-2 py-1 rounded hover:bg-gold-100 dark:hover:bg-ink-600 flex-shrink-0"
+                      title="Test"
+                    >
+                      <Play size={14} className={testing === v.voiceURI ? 'animate-pulse' : ''} />
+                    </button>
+                  </button>
+                );
+              })}
+            </div>
+          ))}
         </div>
       </div>
-      <p className="text-[11px] text-ink-500 dark:text-ink-300/70 italic">
-        Voices come from your device. iPhones use Siri voices; Android uses Google voices. On the Read page, tap the speaker icon to listen to a chapter.
-      </p>
+
+      <div className="card-tight text-[11px] text-ink-600 dark:text-ink-300 italic space-y-1 bg-gold-50/60 dark:bg-ink-700/40">
+        <div className="font-semibold not-italic text-ink-700 dark:text-ink-200">Want more accents?</div>
+        <div>
+          Voices come from your device. To add more (Russian, Irish, Spanish, etc.):
+        </div>
+        <div><strong>iPhone/iPad:</strong> Settings → Accessibility → Spoken Content → Voices → tap a language → download.</div>
+        <div><strong>Android:</strong> Settings → System → Languages → Text-to-speech → install language packs.</div>
+        <div><strong>Mac/Windows:</strong> System Settings → Accessibility → Spoken Content (Mac) or Time & Language → Speech (Windows).</div>
+      </div>
     </div>
   );
 }
