@@ -68,6 +68,11 @@ async function mannaUpdate(): Promise<UpdateResult> {
     return 'up-to-date';
   }
 
+  // Set a flag so the page that loads AFTER the reload can show a confirmation
+  // toast. Without this, the user sees a silent reload to home that's
+  // indistinguishable from the old buggy behavior.
+  try { sessionStorage.setItem('manna_just_updated', '1'); } catch {}
+
   // There's a new version. Have it skip waiting and reload.
   try {
     // updateSW(true) sends SKIP_WAITING and reloads when the new SW activates.

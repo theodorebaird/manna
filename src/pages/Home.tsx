@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   BookOpen, Brain, ChevronRight, Sparkles, HelpCircle,
-  Cross, Heart, Library, Bookmark, RefreshCw
+  Cross, Heart, Library, Bookmark, RefreshCw, CheckCircle2
 } from 'lucide-react';
 import { regenerateHearts, type Settings } from '../db/db';
 import { getStreak } from '../lib/xp';
@@ -37,6 +37,7 @@ export default function Home() {
   const [streak, setStreak] = useState(0);
   const [next, setNext] = useState<string | null>(null);
   const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [justUpdated, setJustUpdated] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -50,6 +51,16 @@ export default function Home() {
     })();
     const handler = () => setUpdateAvailable(true);
     window.addEventListener('manna:update-available', handler);
+
+    // Check for post-update flag set by main.tsx before the reload
+    try {
+      if (sessionStorage.getItem('manna_just_updated') === '1') {
+        sessionStorage.removeItem('manna_just_updated');
+        setJustUpdated(true);
+        setTimeout(() => setJustUpdated(false), 5000);
+      }
+    } catch {}
+
     return () => window.removeEventListener('manna:update-available', handler);
   }, []);
 
@@ -89,7 +100,14 @@ export default function Home() {
         </div>
       </header>
 
-      {updateAvailable && (
+      {justUpdated && (
+        <div className="w-full card flex items-center gap-2 border-emerald-300 dark:border-emerald-700/60 bg-emerald-50/70 dark:bg-emerald-900/20 animate-slide-up">
+          <CheckCircle2 size={18} className="text-emerald-600 dark:text-emerald-400" />
+          <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">Updated to the latest version</span>
+        </div>
+      )}
+
+      {updateAvailable && !justUpdated && (
         <button
           onClick={installUpdate}
           className="w-full card flex items-center justify-between gap-2 border-emerald-300 dark:border-emerald-700/60 bg-emerald-50/70 dark:bg-emerald-900/20 hover:shadow-glow transition animate-fade-in"
