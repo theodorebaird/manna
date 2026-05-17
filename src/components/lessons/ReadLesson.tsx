@@ -4,16 +4,16 @@ import { parseRef, type Verse } from '../../lib/bible';
 import VerseList from '../VerseList';
 
 interface Props {
-  ref: string;
+  verseRef: string;
   reflectPrompt: string;
   onDone: (xp: number) => void;
 }
 
-export default function ReadLesson({ ref, reflectPrompt, onDone }: Props) {
+export default function ReadLesson({ verseRef, reflectPrompt, onDone }: Props) {
   const { getChapter } = useScripture();
   const [verses, setVerses] = useState<Verse[]>([]);
   const [reflection, setReflection] = useState('');
-  const parsed = parseRef(ref);
+  const parsed = parseRef(verseRef);
 
   useEffect(() => {
     if (!parsed) return;
@@ -24,13 +24,13 @@ export default function ReadLesson({ ref, reflectPrompt, onDone }: Props) {
     })();
   }, [parsed, getChapter]);
 
-  if (!parsed) return <div className="text-rose-500">Bad reference: {ref}</div>;
+  if (!parsed) return <div className="text-rose-500">Bad reference: {verseRef}</div>;
 
   return (
     <div className="space-y-5 animate-fade-in">
       <div>
         <div className="section-label">Read</div>
-        <h2 className="font-serif text-2xl text-gold-700 dark:text-gold-300">{ref}</h2>
+        <h2 className="font-serif text-2xl text-gold-700 dark:text-gold-300">{verseRef}</h2>
       </div>
       <div className="card">
         <VerseList verses={verses} fontSize="md" />

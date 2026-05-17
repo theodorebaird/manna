@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, ChevronRight } from 'lucide-react';
 import topicsData from '../data/topics.json';
 
@@ -28,10 +28,30 @@ const COLOR_MAP: Record<string, string> = {
 };
 
 export default function Topics() {
-  const [selected, setSelected] = useState<Topic | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [selected, setSelected] = useState<Topic | null>(() => {
+    const id = searchParams.get('t');
+    return id ? TOPICS.find(t => t.id === id) ?? null : null;
+  });
+
+  // Sync selection ↔ URL so back button works as expected
+  useEffect(() => {
+    const id = searchParams.get('t');
+    const t = id ? TOPICS.find(x => x.id === id) ?? null : null;
+    if (t?.id !== selected?.id) setSelected(t);
+  }, [searchParams, selected?.id]);
+
+  const openTopic = (t: Topic) => {
+    setSelected(t);
+    setSearchParams({ t: t.id }, { replace: false });
+  };
+  const closeTopic = () => {
+    setSelected(null);
+    setSearchParams({}, { replace: false });
+  };
 
   if (selected) {
-    return <TopicDetail topic={selected} onBack={() => setSelected(null)} />;
+    return <TopicDetail topic={selected} onBack={closeTopic} />;
   }
 
   return (
@@ -49,7 +69,7 @@ export default function Topics() {
         {TOPICS.map(t => (
           <button
             key={t.id}
-            onClick={() => setSelected(t)}
+            onClick={() => openTopic(t)}
             className={`text-left p-3 rounded-2xl border bg-gradient-to-br ${COLOR_MAP[t.color] ?? COLOR_MAP.gold} transition active:scale-95`}
           >
             <div className="font-semibold text-sm leading-tight">{t.title}</div>

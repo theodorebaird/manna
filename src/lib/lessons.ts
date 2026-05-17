@@ -33,6 +33,15 @@ export function getCurriculum(): Curriculum {
   return data;
 }
 
+export function getFirstLessonId(): string | null {
+  for (const u of data.units) {
+    for (const s of u.skills) {
+      for (const l of s.lessons) return l.id;
+    }
+  }
+  return null;
+}
+
 export function getLesson(id: string): { lesson: Lesson; skill: Skill; unit: Unit } | null {
   for (const unit of data.units) {
     for (const skill of unit.skills) {

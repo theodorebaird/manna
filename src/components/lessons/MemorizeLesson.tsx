@@ -5,14 +5,14 @@ import { db } from '../../db/db';
 import { createCard } from '../../lib/srs';
 
 interface Props {
-  ref: string;
+  verseRef: string;
   text: string;
   onDone: (xp: number) => void;
 }
 
 type Phase = 'learn' | 'test' | 'result';
 
-export default function MemorizeLesson({ ref, text, onDone }: Props) {
+export default function MemorizeLesson({ verseRef, text, onDone }: Props) {
   const [phase, setPhase] = useState<Phase>('learn');
   const [answers, setAnswers] = useState<string[]>([]);
   const [score, setScore] = useState<{ score: number; perWord: { expected: string; given: string; ok: boolean }[] } | null>(null);
@@ -38,8 +38,8 @@ export default function MemorizeLesson({ ref, text, onDone }: Props) {
 
   const finish = async () => {
     // Add to user's spaced-repetition deck (idempotent)
-    const exists = await db.memoryCards.where('ref').equals(ref).first();
-    if (!exists) await db.memoryCards.add(createCard(ref, text));
+    const exists = await db.memoryCards.where('ref').equals(verseRef).first();
+    if (!exists) await db.memoryCards.add(createCard(verseRef, text));
     onDone(15);
   };
 
@@ -48,7 +48,7 @@ export default function MemorizeLesson({ ref, text, onDone }: Props) {
       <div className="space-y-5 animate-fade-in">
         <div>
           <div className="section-label">Memorize · Learn the verse</div>
-          <h2 className="font-serif text-2xl text-gold-700 dark:text-gold-300">{ref}</h2>
+          <h2 className="font-serif text-2xl text-gold-700 dark:text-gold-300">{verseRef}</h2>
         </div>
         <div className="card space-y-3">
           <div className="verse-text italic whitespace-pre-wrap">{text}</div>
@@ -68,7 +68,7 @@ export default function MemorizeLesson({ ref, text, onDone }: Props) {
       <div className="space-y-5 animate-fade-in">
         <div>
           <div className="section-label">Memorize · {plan.label}</div>
-          <h2 className="font-serif text-2xl text-gold-700 dark:text-gold-300">{ref}</h2>
+          <h2 className="font-serif text-2xl text-gold-700 dark:text-gold-300">{verseRef}</h2>
         </div>
         <div className="card space-y-3">
           <div className="verse-text italic whitespace-pre-wrap">{masked}</div>

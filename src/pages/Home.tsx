@@ -1,17 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  BookOpen, GraduationCap, Brain, ChevronRight, Sparkles, HelpCircle,
+  BookOpen, Brain, ChevronRight, Sparkles, HelpCircle,
   Cross, Heart, Library, Bookmark
 } from 'lucide-react';
 import { regenerateHearts, type Settings } from '../db/db';
-import { getStreak, getTodayStats } from '../lib/xp';
-import { computeUnlocks } from '../lib/lessons';
+import { getStreak } from '../lib/xp';
+import { computeUnlocks, getFirstLessonId } from '../lib/lessons';
 import StreakBadge from '../components/StreakBadge';
-import XPBar from '../components/XPBar';
-import HeartsIndicator from '../components/HeartsIndicator';
 import topicsData from '../data/topics.json';
-import booksData from '../data/books.json';
 
 const VERSE_OF_DAY = {
   ref: 'Lamentations 3:22-23',
@@ -19,10 +16,8 @@ const VERSE_OF_DAY = {
 };
 
 interface Topic { id: string; title: string; color: string }
-interface Book { id: string; title: string; author: string; rec: string }
 
 const QUICK_TOPICS: Topic[] = (topicsData as Topic[]).slice(0, 6);
-const FEATURED_BOOKS: Book[] = (booksData as Book[]).slice(0, 3);
 
 const COLOR_TINT: Record<string, string> = {
   sky:     'bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-200',
@@ -40,7 +35,6 @@ const COLOR_TINT: Record<string, string> = {
 export default function Home() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [streak, setStreak] = useState(0);
-  const [todayXP, setTodayXP] = useState(0);
   const [next, setNext] = useState<string | null>(null);
 
   useEffect(() => {
@@ -48,10 +42,10 @@ export default function Home() {
       const s = await regenerateHearts();
       setSettings(s);
       setStreak(await getStreak());
-      const t = await getTodayStats();
-      setTodayXP(t.xp);
       const un = await computeUnlocks();
-      setNext(un.nextLessonId);
+      // Fall back to the first lesson of the curriculum if nothing has been
+      // started, so "Continue learning" always has somewhere to go.
+      setNext(un.nextLessonId ?? getFirstLessonId());
     })();
   }, []);
 
@@ -83,44 +77,29 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="card space-y-4">
-        <div className="flex items-center justify-between">
-          <span className="section-label">Today</span>
-          <HeartsIndicator hearts={settings.hearts} />
-        </div>
-        <XPBar current={todayXP} goal={settings.dailyXpGoal} />
-        {next ? (
-          <Link to={`/lesson/${next}`} className="btn-primary w-full">
-            <Sparkles size={18} />
-            Continue learning
-            <ChevronRight size={18} />
-          </Link>
-        ) : (
-          <Link to="/learn" className="btn-primary w-full">
-            <GraduationCap size={18} />
-            Open the skill tree
-          </Link>
-        )}
-      </div>
-
+      {/* 1. Verse of the day */}
       <div className="card space-y-2">
         <div className="section-label">Verse of the day</div>
         <p className="verse-text italic">{VERSE_OF_DAY.text}</p>
         <div className="text-sm text-gold-700 dark:text-gold-400 font-medium">— {VERSE_OF_DAY.ref}</div>
       </div>
 
+      {/* 2. How are you feeling? */}
       <section className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <div className="section-label flex items-center gap-1.5"><Heart size={14} /> How are you feeling?</div>
-          <Link to="/topics" className="text-xs text-gold-700 dark:text-gold-400 flex items-center gap-1">
-            See all <ChevronRight size={12} />
+          <Link
+            to="/topics"
+            className="btn-outline text-xs py-1.5 px-3"
+          >
+            See all <ChevronRight size={14} />
           </Link>
         </div>
         <div className="grid grid-cols-3 gap-2">
           {QUICK_TOPICS.map(t => (
             <Link
               key={t.id}
-              to={`/topics?focus=${t.id}`}
+              to={`/topics?t=${t.id}`}
               className={`text-center px-2 py-3 rounded-xl text-xs font-semibold leading-tight ${COLOR_TINT[t.color] ?? COLOR_TINT.gold}`}
             >
               {t.title}
@@ -129,6 +108,17 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 3. Continue learning */}
+      <Link
+        to={next ? `/lesson/${next}` : '/learn'}
+        className="btn-primary w-full"
+      >
+        <Sparkles size={18} />
+        Continue learning
+        <ChevronRight size={18} />
+      </Link>
+
+      {/* 4. Saved + Book picks */}
       <div className="grid grid-cols-2 gap-3">
         <Link to="/saved" className="card-tight flex flex-col items-center text-center gap-1 hover:shadow-glow transition">
           <Bookmark className="text-gold-600 dark:text-gold-400" size={22} />
@@ -140,6 +130,7 @@ export default function Home() {
         </Link>
       </div>
 
+      {/* 5. Quick links */}
       <div className="grid grid-cols-3 gap-3">
         <Link to="/read" className="card-tight flex flex-col items-center text-center gap-1 hover:shadow-glow transition">
           <BookOpen className="text-gold-600 dark:text-gold-400" size={22} />
@@ -154,24 +145,6 @@ export default function Home() {
           <div className="text-xs font-semibold text-ink-700 dark:text-ink-100">Memorize</div>
         </Link>
       </div>
-
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="section-label flex items-center gap-1.5"><Library size={14} /> Recommended reading</div>
-          <Link to="/books" className="text-xs text-gold-700 dark:text-gold-400 flex items-center gap-1">
-            All books <ChevronRight size={12} />
-          </Link>
-        </div>
-        <div className="space-y-2">
-          {FEATURED_BOOKS.map(b => (
-            <Link key={b.id} to="/books" className="block card-tight hover:shadow-glow transition">
-              <div className="font-serif text-base text-gold-700 dark:text-gold-300 leading-tight">{b.title}</div>
-              <div className="text-xs text-ink-600 dark:text-ink-300">{b.author}</div>
-              <div className="text-xs text-ink-500 dark:text-ink-300/70 mt-1 line-clamp-2 italic">{b.rec}</div>
-            </Link>
-          ))}
-        </div>
-      </section>
     </div>
   );
 }

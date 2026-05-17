@@ -15,7 +15,7 @@ export default function LessonRunner({ lesson, onComplete }: Props) {
     case 'read':
       return (
         <ReadLesson
-          ref={lesson.ref}
+          verseRef={lesson.ref}
           reflectPrompt={lesson.reflectPrompt}
           onDone={xp => onComplete({ score: 100, xp, passed: true })}
         />
@@ -30,7 +30,7 @@ export default function LessonRunner({ lesson, onComplete }: Props) {
     case 'memorize':
       return (
         <MemorizeLesson
-          ref={lesson.ref}
+          verseRef={lesson.ref}
           text={lesson.text}
           onDone={xp => onComplete({ score: 100, xp, passed: true })}
         />

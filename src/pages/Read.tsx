@@ -276,12 +276,12 @@ export default function Read() {
       />
 
       {studyVerse && (
-        <StudyModal verse={studyVerse.verse} ref={studyVerse.ref} onClose={() => setStudyVerse(null)} />
+        <StudyModal verse={studyVerse.verse} verseRef={studyVerse.ref} onClose={() => setStudyVerse(null)} />
       )}
 
       {noteVerse && (
         <NoteModal
-          ref={noteVerse.ref}
+          verseRef={noteVerse.ref}
           text={noteVerse.verse.t}
           initialNote={noteVerse.existingNote}
           onClose={() => setNoteVerse(null)}
@@ -345,8 +345,8 @@ function ChapterRenderer({ verses, scale, highlightMap, selectedVerse, onVerseCl
   );
 }
 
-function StudyModal({ verse, ref, onClose }: { verse: Verse; ref: string; onClose: () => void }) {
-  const data = (crossRefs as Record<string, { refs: string[]; commentary: string }>)[ref];
+function StudyModal({ verse, verseRef, onClose }: { verse: Verse; verseRef: string; onClose: () => void }) {
+  const data = (crossRefs as Record<string, { refs: string[]; commentary: string }>)[verseRef];
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-ink-900/60 backdrop-blur-sm animate-fade-in" onClick={onClose}>
       <div
@@ -361,7 +361,7 @@ function StudyModal({ verse, ref, onClose }: { verse: Verse; ref: string; onClos
         </div>
 
         <div className="space-y-2">
-          <div className="text-sm font-medium text-gold-700 dark:text-gold-400">{ref}</div>
+          <div className="text-sm font-medium text-gold-700 dark:text-gold-400">{verseRef}</div>
           <div className="verse-text italic text-base">{verse.t}</div>
         </div>
 
@@ -401,8 +401,8 @@ function StudyModal({ verse, ref, onClose }: { verse: Verse; ref: string; onClos
   );
 }
 
-function NoteModal({ ref, text, initialNote, onClose, onSave }: {
-  ref: string;
+function NoteModal({ verseRef, text, initialNote, onClose, onSave }: {
+  verseRef: string;
   text: string;
   initialNote: string;
   onClose: () => void;
@@ -416,7 +416,7 @@ function NoteModal({ ref, text, initialNote, onClose, onSave }: {
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
-          <h3 className="font-serif text-xl text-gold-700 dark:text-gold-300">Note on {ref}</h3>
+          <h3 className="font-serif text-xl text-gold-700 dark:text-gold-300">Note on {verseRef}</h3>
           <button onClick={onClose} className="text-ink-500 hover:text-ink-800 dark:hover:text-ink-100"><X size={20} /></button>
         </div>
         <div className="verse-text italic text-sm text-ink-700 dark:text-ink-200">{text}</div>
