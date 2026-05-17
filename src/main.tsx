@@ -17,59 +17,50 @@ registerSW({
   }
 });
 
-/**
- * Get the content-hash of the currently-loaded JS bundle.
- * Vite names assets like /assets/index-{HASH}.js — comparing this hash
- * to the one in the live server's index.html tells us if a new build exists.
- * Returns null in dev mode (no bundled assets).
- */
-function getCurrentBundleHash(): string | null {
-  const scripts = [...document.querySelectorAll('script[src*="/assets/index-"]')];
-  if (scripts.length === 0) return null;
-  const src = scripts[0].getAttribute('src') ?? '';
-  return src.match(/index-([A-Za-z0-9_-]+)\.js/)?.[1] ?? null;
-}
-
-async function getServerBundleHash(): Promise<string | null> {
-  const resp = await fetch('/?_check=' + Date.now(), { cache: 'no-store' });
-  if (!resp.ok) throw new Error('HTTP ' + resp.status);
-  const text = await resp.text();
-  return text.match(/\/assets\/index-([A-Za-z0-9_-]+)\.js/)?.[1] ?? null;
-}
-
 type UpdateResult = 'updated' | 'up-to-date' | 'error';
 
 (window as unknown as { __mannaUpdate?: () => Promise<UpdateResult> }).__mannaUpdate = async (): Promise<UpdateResult> => {
-  const currentHash = getCurrentBundleHash();
-  if (!currentHash) {
-    // Dev mode — no bundled assets to compare. Treat as up-to-date.
-    return 'up-to-date';
-  }
-  let serverHash: string | null;
+  // In dev (or if SW unavailable), just report up-to-date.
+  if (!('serviceWorker' in navigator)) return 'up-to-date';
+  const reg = await navigator.serviceWorker.getRegistration();
+  if (!reg) return 'up-to-date';
+
+  // Listen for updatefound BEFORE calling update() so we don't miss it.
+  // Also detect a SW that's already waiting (previous tab triggered update).
+  let foundUpdate = !!(reg.waiting || reg.installing);
+
+  const updateFound: Promise<boolean> = new Promise(resolve => {
+    let done = false;
+    const finish = (val: boolean) => { if (!done) { done = true; resolve(val); } };
+    if (foundUpdate) { finish(true); return; }
+    const onUpdateFound = () => finish(true);
+    reg.addEventListener('updatefound', onUpdateFound);
+    // Give the SW up to 4s to fetch the new manifest from the server.
+    setTimeout(() => {
+      reg.removeEventListener('updatefound', onUpdateFound);
+      finish(!!(reg.waiting || reg.installing));
+    }, 4000);
+  });
+
   try {
-    serverHash = await Promise.race([
-      getServerBundleHash(),
-      new Promise<string | null>((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+    await Promise.race([
+      reg.update(),
+      new Promise<void>((_, rej) => setTimeout(() => rej(new Error('timeout')), 6000))
     ]);
   } catch {
     return 'error';
   }
-  if (!serverHash) {
-    // Couldn't determine — be safe and don't reload
-    return 'up-to-date';
-  }
-  if (serverHash === currentHash) {
-    return 'up-to-date';
-  }
-  // New version exists — clear caches and reload
+
+  foundUpdate = await updateFound;
+  if (!foundUpdate) return 'up-to-date';
+
+  // New version is installing or waiting — give the install a moment, then reload.
+  await new Promise(r => setTimeout(r, 800));
   try {
+    if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
     if ('caches' in window) {
       const names = await caches.keys();
       await Promise.all(names.map(n => caches.delete(n)));
-    }
-    if ('serviceWorker' in navigator) {
-      const regs = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(regs.map(r => r.unregister()));
     }
   } catch {}
   location.replace('/?u=' + Date.now());
