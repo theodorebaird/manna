@@ -18,7 +18,7 @@ const updateSW = registerSW({
 });
 
 (window as unknown as { __mannaUpdate?: () => Promise<void> }).__mannaUpdate = async () => {
-  // Clear all caches and unregister all service workers, then reload.
+  // Clear all caches and unregister all service workers, then reload from root.
   try {
     if ('caches' in window) {
       const names = await caches.keys();
@@ -29,9 +29,11 @@ const updateSW = registerSW({
       await Promise.all(regs.map(r => r.unregister()));
     }
   } catch {}
-  // Trigger the vite-plugin-pwa update flow, then hard reload.
+  // Trigger the vite-plugin-pwa update flow if available.
   try { await updateSW(true); } catch {}
-  location.reload();
+  // Always reload from root — avoids 404 if the static host doesn't have
+  // an SPA catchall configured. With cache cleared, this fetches fresh.
+  location.replace('/');
 };
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
