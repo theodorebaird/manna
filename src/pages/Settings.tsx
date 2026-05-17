@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Sun, Moon, Monitor, Type, Trash2, Info, HelpCircle, ChevronRight, BookOpen, RefreshCw, Loader2, CheckCircle2, XCircle, X as XIcon, Volume2, Play } from 'lucide-react';
-import { Speaker, getVoices, isSupported as ttsSupported, inferGender, getAccentLabel, getFlagEmoji } from '../lib/tts';
+import { Speaker, getVoices, isSupported as ttsSupported, inferGender, getAccentLabel } from '../lib/tts';
 import { useTheme, type ThemeMode } from '../components/ThemeProvider';
 import { db, getSettings, updateSettings, type Settings as DBSettings } from '../db/db';
 import { useScripture, TRANSLATIONS, type TranslationId } from '../components/ScriptureProvider';
@@ -295,19 +295,24 @@ function VoiceCard({
     ? voices
     : voices.filter(v => inferGender(v) === gender);
 
-  // Group filtered voices by accent label, then sort groups alphabetically.
-  // English variants are pinned to the top.
+  // Short accent label: drop the redundant " English" suffix on en-* voices.
+  const shortLabel = (lang: string) => getAccentLabel(lang).replace(/\s*English$/, '').trim() || 'English';
+
+  // Group filtered voices by short accent label.
   const grouped = new Map<string, SpeechSynthesisVoice[]>();
   for (const v of filtered) {
-    const label = getAccentLabel(v.lang);
+    const label = shortLabel(v.lang);
     if (!grouped.has(label)) grouped.set(label, []);
     grouped.get(label)!.push(v);
   }
+  // Sort: American first, then British, then alphabetical.
+  const ORDER = ['American', 'British', 'Irish', 'Australian', 'Indian', 'South African', 'Canadian', 'New Zealand', 'Singaporean'];
   const groupKeys = [...grouped.keys()].sort((a, b) => {
-    const aIsEn = a.includes('English');
-    const bIsEn = b.includes('English');
-    if (aIsEn && !bIsEn) return -1;
-    if (!aIsEn && bIsEn) return 1;
+    const ai = ORDER.indexOf(a);
+    const bi = ORDER.indexOf(b);
+    if (ai >= 0 && bi >= 0) return ai - bi;
+    if (ai >= 0) return -1;
+    if (bi >= 0) return 1;
     return a.localeCompare(b);
   });
 
@@ -316,6 +321,8 @@ function VoiceCard({
     female: voices.filter(v => inferGender(v) === 'female').length,
     male: voices.filter(v => inferGender(v) === 'male').length
   };
+  // Only show the gender toggle if there's actually a choice to make.
+  const showGenderToggle = counts.female > 0 && counts.male > 0;
 
   return (
     <div className="card space-y-4">
@@ -340,29 +347,27 @@ function VoiceCard({
         </div>
       </div>
 
-      <div className="space-y-2">
-        <div className="text-xs text-ink-500 dark:text-ink-300/70">Gender</div>
-        <div className="grid grid-cols-3 gap-1 p-1 rounded-2xl bg-ink-100/70 dark:bg-ink-800/70 border border-gold-100 dark:border-ink-700">
+      {showGenderToggle && (
+        <div className="grid grid-cols-3 gap-1 p-1 rounded-xl bg-ink-100/70 dark:bg-ink-800/70 border border-gold-100 dark:border-ink-700">
           {([
-            ['all',    'All',     counts.all],
-            ['female', '♀ Female', counts.female],
-            ['male',   '♂ Male',   counts.male]
-          ] as const).map(([g, label, n]) => (
+            ['all',    'All'],
+            ['female', 'Female'],
+            ['male',   'Male']
+          ] as const).map(([g, label]) => (
             <button
               key={g}
               onClick={() => setGender(g)}
-              className={`py-2 rounded-xl text-xs font-semibold transition flex flex-col items-center justify-center gap-0.5 ${
+              className={`py-1.5 rounded-lg text-xs font-semibold transition ${
                 gender === g ? 'bg-white dark:bg-ink-700 text-gold-700 dark:text-gold-300 shadow-soft' : 'text-ink-600 dark:text-ink-300'
               }`}
             >
-              <span>{label}</span>
-              <span className="text-[10px] opacity-70 font-normal">{n}</span>
+              {label}
             </button>
           ))}
         </div>
-      </div>
+      )}
 
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <div className="text-xs text-ink-500 dark:text-ink-300/70">Voice</div>
         {loading && <div className="text-sm text-ink-500 italic">Loading voices…</div>}
         {!loading && voices.length === 0 && (
@@ -372,85 +377,73 @@ function VoiceCard({
           <div className="text-sm text-ink-500 italic">No {gender} voices detected. Try "All".</div>
         )}
 
-        <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
-          {/* System default — always shown at top */}
-          <button
-            onClick={() => onPickVoice(null)}
-            className={`w-full text-left px-3 py-2 rounded-xl border transition flex items-center justify-between gap-2 ${
-              !currentVoiceURI
-                ? 'border-gold-500 bg-gold-50 dark:bg-ink-700'
-                : 'border-gold-100 dark:border-ink-700 hover:bg-gold-50 dark:hover:bg-ink-700'
-            }`}
-          >
-            <div className="min-w-0">
-              <div className="font-medium text-sm text-ink-800 dark:text-ink-100">System default</div>
-              <div className="text-[11px] text-ink-500 dark:text-ink-300/70">Whatever voice your device chooses</div>
-            </div>
-            <button
-              onClick={e => { e.stopPropagation(); test(null); }}
-              className="text-gold-700 dark:text-gold-400 px-2 py-1 rounded hover:bg-gold-100 dark:hover:bg-ink-600 flex-shrink-0"
-              title="Test"
-            >
-              <Play size={14} className={testing === 'default' ? 'animate-pulse' : ''} />
-            </button>
-          </button>
+        <div className="space-y-2 max-h-[24rem] overflow-y-auto pr-1">
+          {/* System default — always at the top */}
+          <VoiceRow
+            label="Default"
+            sub="Whatever your device chooses"
+            active={!currentVoiceURI}
+            testing={testing === 'default'}
+            onPick={() => onPickVoice(null)}
+            onTest={() => test(null)}
+          />
 
           {groupKeys.map(group => (
             <div key={group} className="space-y-1">
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-300/70 px-1 flex items-center gap-1.5">
-                <span>{getFlagEmoji(grouped.get(group)![0].lang)}</span>
-                <span>{group}</span>
-                <span className="opacity-60">· {grouped.get(group)!.length}</span>
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-300/70 px-1">
+                {group}
               </div>
-              {grouped.get(group)!.map(v => {
-                const active = currentVoiceURI === v.voiceURI;
-                const g = inferGender(v);
-                return (
-                  <button
-                    key={v.voiceURI}
-                    onClick={() => onPickVoice(v.voiceURI)}
-                    className={`w-full text-left px-3 py-2 rounded-xl border transition flex items-center justify-between gap-2 ${
-                      active
-                        ? 'border-gold-500 bg-gold-50 dark:bg-ink-700'
-                        : 'border-gold-100 dark:border-ink-700 hover:bg-gold-50 dark:hover:bg-ink-700'
-                    }`}
-                  >
-                    <div className="min-w-0 flex-1">
-                      <div className="font-medium text-sm text-ink-800 dark:text-ink-100 truncate flex items-center gap-1.5">
-                        {g === 'female' && <span className="text-rose-500" title="Female">♀</span>}
-                        {g === 'male' && <span className="text-sky-600 dark:text-sky-400" title="Male">♂</span>}
-                        {v.name}
-                      </div>
-                      <div className="text-[11px] text-ink-500 dark:text-ink-300/70">
-                        {v.lang}{v.localService ? ' · offline' : ' · online'}
-                      </div>
-                    </div>
-                    <button
-                      onClick={e => { e.stopPropagation(); test(v); }}
-                      className="text-gold-700 dark:text-gold-400 px-2 py-1 rounded hover:bg-gold-100 dark:hover:bg-ink-600 flex-shrink-0"
-                      title="Test"
-                    >
-                      <Play size={14} className={testing === v.voiceURI ? 'animate-pulse' : ''} />
-                    </button>
-                  </button>
-                );
-              })}
+              {grouped.get(group)!.map(v => (
+                <VoiceRow
+                  key={v.voiceURI}
+                  label={v.name}
+                  active={currentVoiceURI === v.voiceURI}
+                  testing={testing === v.voiceURI}
+                  onPick={() => onPickVoice(v.voiceURI)}
+                  onTest={() => test(v)}
+                />
+              ))}
             </div>
           ))}
         </div>
       </div>
 
-      <div className="card-tight text-[11px] text-ink-600 dark:text-ink-300 italic space-y-1 bg-gold-50/60 dark:bg-ink-700/40">
-        <div className="font-semibold not-italic text-ink-700 dark:text-ink-200">Want more voices (accents or male/female)?</div>
-        <div>
-          Devices usually ship with mostly female voices by default — male voices and extra accents are downloads. Bigger Siri "Enhanced" / "Premium" voices also have to be downloaded.
-        </div>
-        <div><strong>iPhone/iPad:</strong> Settings → Accessibility → Spoken Content → Voices → English → tap any voice to download. Look for Aaron, Daniel, Tom, Rishi, Arthur, Reed, Ralph, Junior (male) and Enhanced versions.</div>
-        <div><strong>Android:</strong> Settings → System → Languages → Text-to-speech → install additional English voices.</div>
-        <div><strong>Mac/Windows:</strong> System Settings → Accessibility → Spoken Content (Mac) or Time &amp; Language → Speech (Windows) → English voices.</div>
-        <div className="text-ink-500 dark:text-ink-300/60">After downloading, fully close and reopen Manna so new voices appear in this list.</div>
-      </div>
+      <p className="text-[11px] text-ink-500 dark:text-ink-300/70 italic">
+        Voices come from your device. On the Read page, tap the speaker icon to listen to a chapter.
+      </p>
     </div>
+  );
+}
+
+function VoiceRow({ label, sub, active, testing, onPick, onTest }: {
+  label: string;
+  sub?: string;
+  active: boolean;
+  testing: boolean;
+  onPick: () => void;
+  onTest: () => void;
+}) {
+  return (
+    <button
+      onClick={onPick}
+      className={`w-full text-left px-3 py-1.5 rounded-lg border transition flex items-center justify-between gap-2 ${
+        active
+          ? 'border-gold-500 bg-gold-50 dark:bg-ink-700'
+          : 'border-gold-100 dark:border-ink-700 hover:bg-gold-50 dark:hover:bg-ink-700'
+      }`}
+    >
+      <div className="min-w-0 flex-1">
+        <div className="font-medium text-sm text-ink-800 dark:text-ink-100 truncate">{label}</div>
+        {sub && <div className="text-[10px] text-ink-500 dark:text-ink-300/70">{sub}</div>}
+      </div>
+      <button
+        onClick={e => { e.stopPropagation(); onTest(); }}
+        className="text-gold-700 dark:text-gold-400 p-1.5 rounded hover:bg-gold-100 dark:hover:bg-ink-600 flex-shrink-0"
+        title="Test"
+      >
+        <Play size={13} className={testing ? 'animate-pulse' : ''} />
+      </button>
+    </button>
   );
 }
 
