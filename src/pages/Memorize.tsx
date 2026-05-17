@@ -1,18 +1,51 @@
 import { useEffect, useMemo, useState } from 'react';
-import { db, type MemoryCard } from '../db/db';
-import { applyResult, chooseDifficulty, planBlanks, expectedWords, checkAnswer, checkFullRecall, createCard, renderMasked } from '../lib/srs';
+import { db, getSettings, updateSettings, type MemoryCard, type Settings } from '../db/db';
+import {
+  applyResult, chooseDifficulty, planBlanks, expectedWords, checkAnswer,
+  checkFullRecall, createCard, renderMasked, renderFirstLetters
+} from '../lib/srs';
 import { recordLesson } from '../lib/xp';
-import { Brain, Plus, Trash2, CheckCircle2, XCircle, ArrowRight, BookOpen } from 'lucide-react';
+import {
+  Brain, Plus, Trash2, CheckCircle2, XCircle, ArrowRight,
+  BookOpen, Settings as Cog, X, Type, AlignJustify, Eye, KeyRound
+} from 'lucide-react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import starterDeck from '../data/memory-verses.json';
+
+type MemorizeMode = 'fill-blanks' | 'first-letters' | 'type-full' | 'read-along';
+
+const MODE_LABEL: Record<MemorizeMode, string> = {
+  'fill-blanks': 'Fill in the blanks',
+  'first-letters': 'First letters only',
+  'type-full': 'Type the whole verse',
+  'read-along': 'Read along (no test)'
+};
+
+const MODE_DESC: Record<MemorizeMode, string> = {
+  'fill-blanks': 'Some words are hidden. Type the missing words. Difficulty grows with your mastery.',
+  'first-letters': 'You see only the first letter of each word. Recite the verse, then check.',
+  'type-full': 'Type the entire verse from memory. Hardest mode — best for verses you know well.',
+  'read-along': 'Just read the verse to refresh it. No test. Use when you want light review.'
+};
+
+const MODE_ICON: Record<MemorizeMode, typeof Brain> = {
+  'fill-blanks': AlignJustify,
+  'first-letters': KeyRound,
+  'type-full': Type,
+  'read-along': Eye
+};
 
 export default function Memorize() {
   const all = useLiveQuery(() => db.memoryCards.toArray(), [], []);
   const [tab, setTab] = useState<'due' | 'browse'>('due');
   const [seeded, setSeeded] = useState(false);
+  const [settings, setSettings] = useState<Settings | null>(null);
+  const [showModeSheet, setShowModeSheet] = useState(false);
 
   useEffect(() => {
     (async () => {
+      const s = await getSettings();
+      setSettings(s);
       const count = await db.memoryCards.count();
       if (count === 0 && !seeded) {
         const now = Date.now();
@@ -23,16 +56,36 @@ export default function Memorize() {
     })();
   }, [seeded]);
 
+  const mode: MemorizeMode = settings?.memorizeMode ?? 'fill-blanks';
+  const setMode = async (m: MemorizeMode) => {
+    const next = await updateSettings({ memorizeMode: m });
+    setSettings(next);
+    setShowModeSheet(false);
+  };
+
   const due = useMemo(() => (all ?? []).filter(c => c.dueAt <= Date.now()), [all]);
   const mastered = useMemo(() => (all ?? []).filter(c => (c.masteryPercent ?? 0) >= 95).length, [all]);
 
+  const ModeIcon = MODE_ICON[mode];
+
   return (
     <div className="space-y-4 animate-fade-in">
-      <header>
-        <h1 className="page-title flex items-center gap-2"><Brain size={24} /> Memorize</h1>
-        <p className="text-sm text-ink-600 dark:text-ink-300">
-          {due.length} due · {all?.length ?? 0} total · {mastered} mastered
-        </p>
+      <header className="flex items-start justify-between gap-2">
+        <div>
+          <h1 className="page-title flex items-center gap-2"><Brain size={24} /> Memorize</h1>
+          <p className="text-sm text-ink-600 dark:text-ink-300">
+            {due.length} due · {all?.length ?? 0} total · {mastered} mastered
+          </p>
+        </div>
+        <button
+          onClick={() => setShowModeSheet(true)}
+          className="chip text-xs flex-shrink-0"
+          title="Change memorize mode"
+        >
+          <ModeIcon size={12} className="mr-1.5" />
+          {MODE_LABEL[mode].split(' ')[0]}
+          <Cog size={11} className="ml-1.5 opacity-60" />
+        </button>
       </header>
 
       <div className="flex gap-2">
@@ -44,25 +97,76 @@ export default function Memorize() {
         }`}>Browse all</button>
       </div>
 
-      {tab === 'due' && <ReviewSession cards={due} />}
+      {tab === 'due' && <ReviewSession cards={due} mode={mode} />}
       {tab === 'browse' && <BrowseList cards={all ?? []} />}
+
+      {showModeSheet && (
+        <ModeSheet currentMode={mode} onPick={setMode} onClose={() => setShowModeSheet(false)} />
+      )}
+    </div>
+  );
+}
+
+function ModeSheet({ currentMode, onPick, onClose }: {
+  currentMode: MemorizeMode;
+  onPick: (m: MemorizeMode) => void;
+  onClose: () => void;
+}) {
+  const modes: MemorizeMode[] = ['fill-blanks', 'first-letters', 'type-full', 'read-along'];
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-ink-900/60 backdrop-blur-sm animate-fade-in" onClick={onClose}>
+      <div
+        className="w-full max-w-md bg-white dark:bg-ink-800 rounded-t-2xl sm:rounded-2xl border border-gold-200 dark:border-ink-700 shadow-soft p-4 space-y-3 animate-slide-up"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between">
+          <h3 className="font-serif text-xl text-gold-700 dark:text-gold-300">Memorize mode</h3>
+          <button onClick={onClose} className="text-ink-500 hover:text-ink-800 dark:hover:text-ink-100"><X size={20} /></button>
+        </div>
+        <div className="space-y-2">
+          {modes.map(m => {
+            const active = m === currentMode;
+            const Icon = MODE_ICON[m];
+            return (
+              <button
+                key={m}
+                onClick={() => onPick(m)}
+                className={`w-full text-left p-3 rounded-xl border transition flex items-start gap-3 ${
+                  active
+                    ? 'border-gold-500 bg-gold-50 dark:bg-ink-700'
+                    : 'border-gold-100 dark:border-ink-700 hover:bg-gold-50 dark:hover:bg-ink-700'
+                }`}
+              >
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  active ? 'bg-gradient-to-br from-gold-400 to-gold-600 text-white' : 'bg-gold-100 dark:bg-ink-600 text-gold-700 dark:text-gold-300'
+                }`}>
+                  <Icon size={18} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-ink-800 dark:text-ink-100 flex items-center gap-2">
+                    {MODE_LABEL[m]}
+                    {active && <span className="text-xs text-gold-700 dark:text-gold-300">Active</span>}
+                  </div>
+                  <div className="text-xs text-ink-500 dark:text-ink-300/70 mt-0.5">{MODE_DESC[m]}</div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
 
 type Phase = 'learn' | 'test' | 'result';
 
-function ReviewSession({ cards }: { cards: MemoryCard[] }) {
+function ReviewSession({ cards, mode }: { cards: MemoryCard[]; mode: MemorizeMode }) {
   const [idx, setIdx] = useState(0);
   const [phase, setPhase] = useState<Phase>('learn');
   const [answers, setAnswers] = useState<string[]>([]);
   const [fullRecall, setFullRecall] = useState('');
   const [scoreResult, setScoreResult] = useState<{ score: number; perWord?: { expected: string; given: string; ok: boolean }[]; before: number; after: number } | null>(null);
 
-  // Snapshot the cards on the first render that has any cards, so updates to
-  // individual cards mid-session don't shift the iteration order. If the deck
-  // grows BEFORE the user starts (e.g. during the initial seed of the starter
-  // deck), keep refreshing the snapshot until we're on the first card.
   const [sessionCards, setSessionCards] = useState<MemoryCard[]>([]);
   useEffect(() => {
     const userHasntStarted = idx === 0 && answers.length === 0 && fullRecall === '' && scoreResult === null;
@@ -73,20 +177,21 @@ function ReviewSession({ cards }: { cards: MemoryCard[] }) {
 
   const card = sessionCards[idx];
   const mastery = card?.masteryPercent ?? 0;
-  const difficulty = useMemo(() => card ? chooseDifficulty(mastery) : 'easy', [card, mastery]);
-  const plan = useMemo(
-    () => card ? planBlanks(card.text, difficulty, card.id ?? 1) : null,
-    [card, difficulty]
+  const adaptiveDifficulty = useMemo(() => card ? chooseDifficulty(mastery) : 'easy', [card, mastery]);
+  // For fill-blanks mode use adaptive difficulty; other modes have fixed behavior
+  const fillPlan = useMemo(
+    () => card ? planBlanks(card.text, adaptiveDifficulty, card.id ?? 1) : null,
+    [card, adaptiveDifficulty]
   );
   const expWords = useMemo(
-    () => card && plan ? expectedWords(card.text, plan) : [],
-    [card, plan]
+    () => card && fillPlan ? expectedWords(card.text, fillPlan) : [],
+    [card, fillPlan]
   );
 
-  // Auto-skip the Learn step for cards already in the practice range
+  // Auto-skip the Learn step for cards already in practice range (except for read-along)
   useEffect(() => {
-    if (card && phase === 'learn' && mastery >= 25) setPhase('test');
-  }, [card, phase, mastery]);
+    if (card && phase === 'learn' && mastery >= 25 && mode !== 'read-along') setPhase('test');
+  }, [card, phase, mastery, mode]);
 
   if (sessionCards.length === 0) {
     return (
@@ -98,7 +203,7 @@ function ReviewSession({ cards }: { cards: MemoryCard[] }) {
     );
   }
 
-  if (idx >= sessionCards.length || !card || !plan) {
+  if (idx >= sessionCards.length || !card || !fillPlan) {
     return (
       <div className="card text-center space-y-3">
         <div className="text-4xl">🌾</div>
@@ -110,10 +215,13 @@ function ReviewSession({ cards }: { cards: MemoryCard[] }) {
 
   const submit = async () => {
     let result;
-    if (difficulty === 'recall') {
+    if (mode === 'fill-blanks') {
+      result = checkAnswer(expWords, answers);
+    } else if (mode === 'type-full' || mode === 'first-letters') {
       result = checkFullRecall(card.text, fullRecall);
     } else {
-      result = checkAnswer(expWords, answers);
+      // read-along: treat as full credit, no test
+      result = { correct: true, perWord: undefined as undefined | { expected: string; given: string; ok: boolean }[], score: 1 };
     }
     const before = mastery;
     const update = applyResult(card, result.score);
@@ -140,22 +248,24 @@ function ReviewSession({ cards }: { cards: MemoryCard[] }) {
       <MasteryBar percent={mastery} />
 
       {phase === 'learn' && (
-        <LearnView card={card} onReady={() => setPhase('test')} />
+        <LearnView card={card} mode={mode} onReady={() => mode === 'read-along' ? submit() : setPhase('test')} />
       )}
 
       {phase === 'test' && (
-        difficulty === 'recall'
-          ? <RecallView card={card} value={fullRecall} onChange={setFullRecall} onSubmit={submit} />
-          : <FillBlanksView card={card} plan={plan} answers={answers} setAnswers={setAnswers} onSubmit={submit} />
+        mode === 'fill-blanks' ? (
+          <FillBlanksView card={card} plan={fillPlan} answers={answers} setAnswers={setAnswers} onSubmit={submit} />
+        ) : mode === 'first-letters' ? (
+          <FirstLettersView card={card} value={fullRecall} onChange={setFullRecall} onSubmit={submit} />
+        ) : mode === 'type-full' ? (
+          <TypeFullView card={card} value={fullRecall} onChange={setFullRecall} onSubmit={submit} />
+        ) : null
       )}
 
       {phase === 'result' && scoreResult && (
         <ResultView
           result={scoreResult}
           card={card}
-          difficulty={difficulty}
-          expectedWords={expWords}
-          fullRecallText={fullRecall}
+          mode={mode}
           onContinue={next}
         />
       )}
@@ -175,18 +285,25 @@ function MasteryBar({ percent }: { percent: number }) {
   );
 }
 
-function LearnView({ card, onReady }: { card: MemoryCard; onReady: () => void }) {
+function LearnView({ card, mode, onReady }: { card: MemoryCard; mode: MemorizeMode; onReady: () => void }) {
+  const buttonLabel = mode === 'read-along' ? 'I read it (+ continue)' : "I'm ready to try";
+  const hint = mode === 'read-along'
+    ? 'Read this verse carefully. Tap below to mark it reviewed and move on.'
+    : mode === 'fill-blanks'
+    ? "Read carefully. Next: some words will be hidden and you'll type them in."
+    : mode === 'first-letters'
+    ? "Read carefully. Next: you'll see only the first letter of each word and type the verse out."
+    : "Read carefully. Next: type the entire verse from memory.";
+
   return (
     <>
       <div className="card space-y-3 animate-fade-in">
         <div className="text-sm font-medium text-gold-700 dark:text-gold-400">{card.ref}</div>
         <div className="verse-text italic whitespace-pre-wrap">{card.text}</div>
-        <div className="text-xs text-ink-500 dark:text-ink-300/70 italic">
-          Take a moment to read this verse carefully. When you're ready, tap below to be tested.
-        </div>
+        <div className="text-xs text-ink-500 dark:text-ink-300/70 italic">{hint}</div>
       </div>
       <button onClick={onReady} className="btn-primary w-full">
-        I'm ready to try <ArrowRight size={18} />
+        {buttonLabel} <ArrowRight size={18} />
       </button>
     </>
   );
@@ -248,7 +365,44 @@ function FillBlanksView({
   );
 }
 
-function RecallView({
+function FirstLettersView({
+  card, value, onChange, onSubmit
+}: {
+  card: MemoryCard;
+  value: string;
+  onChange: (v: string) => void;
+  onSubmit: () => void;
+}) {
+  const hint = renderFirstLetters(card.text);
+  return (
+    <>
+      <div className="card space-y-3 animate-fade-in">
+        <div className="text-sm font-medium text-gold-700 dark:text-gold-400">{card.ref}</div>
+        <div className="font-serif text-lg leading-relaxed text-ink-800 dark:text-ink-100 whitespace-pre-wrap tracking-wider">
+          {hint}
+        </div>
+        <div className="text-xs text-ink-500 dark:text-ink-300/70 italic">
+          Type the verse out using these first-letter clues.
+        </div>
+      </div>
+      <div className="card">
+        <textarea
+          autoFocus
+          rows={5}
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder="Type the verse…"
+          className="input resize-none w-full"
+        />
+      </div>
+      <button onClick={onSubmit} disabled={value.trim().length < 5} className="btn-primary w-full">
+        Check
+      </button>
+    </>
+  );
+}
+
+function TypeFullView({
   card, value, onChange, onSubmit
 }: {
   card: MemoryCard;
@@ -280,21 +434,17 @@ function RecallView({
 }
 
 function ResultView({
-  result, card, difficulty, expectedWords, fullRecallText, onContinue
+  result, card, mode, onContinue
 }: {
   result: { score: number; perWord?: { expected: string; given: string; ok: boolean }[]; before: number; after: number };
   card: MemoryCard;
-  difficulty: 'easy' | 'medium' | 'hard' | 'recall';
-  expectedWords: string[];
-  fullRecallText: string;
+  mode: MemorizeMode;
   onContinue: () => void;
 }) {
   const fullCorrect = result.score >= 0.999;
   const partial = !fullCorrect && result.score >= 0.5;
   const dropped = result.after < result.before;
-
-  void fullRecallText;
-  void expectedWords;
+  const isReadAlong = mode === 'read-along';
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -311,7 +461,7 @@ function ResultView({
           {fullCorrect ? <CheckCircle2 size={32} /> : partial ? <ArrowRight size={32} /> : <XCircle size={32} />}
         </div>
         <h3 className="font-serif text-xl text-ink-800 dark:text-ink-100">
-          {fullCorrect ? 'Perfect!' : partial ? 'Almost there' : 'Keep practicing'}
+          {isReadAlong ? 'Marked reviewed' : fullCorrect ? 'Perfect!' : partial ? 'Almost there' : 'Keep practicing'}
         </h3>
         <p className="text-sm text-ink-600 dark:text-ink-300">
           {result.before === result.after
@@ -330,16 +480,16 @@ function ResultView({
               <span key={i} className={`px-2 py-1 rounded text-xs font-medium ${
                 w.ok
                   ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200'
-                  : 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-200 line-through decoration-rose-500'
+                  : 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-200'
               }`}>
-                {w.ok ? w.given || w.expected : <>{w.given || '∅'} → <strong className="no-underline">{w.expected}</strong></>}
+                {w.ok ? (w.given || w.expected) : <>{w.given || '∅'} → <strong>{w.expected}</strong></>}
               </span>
             ))}
           </div>
         </div>
       )}
 
-      {!result.perWord && difficulty === 'recall' && !fullCorrect && (
+      {!result.perWord && !isReadAlong && !fullCorrect && (
         <div className="card space-y-2">
           <div className="section-label">Correct verse</div>
           <div className="verse-text italic whitespace-pre-wrap">{card.text}</div>

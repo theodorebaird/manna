@@ -69,11 +69,6 @@
   .gold-divider {
     @apply h-px bg-gradient-to-r from-transparent via-gold-300 dark:via-gold-700 to-transparent;
   }
-  .hl-yellow { background-color: #FDE68A; }
-  .hl-green  { background-color: #6EE7B7; }
-  .hl-blue   { background-color: #93C5FD; }
-  .hl-pink   { background-color: #F472B6; }
-  .hl-orange { background-color: #FDBA74; }
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;

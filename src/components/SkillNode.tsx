@@ -20,9 +20,10 @@ interface Props {
   state: 'locked' | 'active' | 'done';
   progressCount: number;        // lessons completed in this skill
   nextLessonId: string | null;  // for "active" — the next lesson to attempt
+  firstLessonId?: string | null; // fallback for 'done' skills (review)
 }
 
-export default function SkillNode({ skill, state, progressCount, nextLessonId }: Props) {
+export default function SkillNode({ skill, state, progressCount, nextLessonId, firstLessonId }: Props) {
   const Icon = ICONS[skill.icon] ?? Star;
   const total = skill.lessons.length;
   const ratio = total > 0 ? progressCount / total : 0;
@@ -60,6 +61,8 @@ export default function SkillNode({ skill, state, progressCount, nextLessonId }:
     </div>
   );
 
-  if (state === 'locked' || !nextLessonId) return <div>{content}</div>;
-  return <Link to={`/lesson/${nextLessonId}`} className="block">{content}</Link>;
+  if (state === 'locked') return <div>{content}</div>;
+  const targetId = nextLessonId ?? firstLessonId ?? skill.lessons[0]?.id;
+  if (!targetId) return <div>{content}</div>;
+  return <Link to={`/lesson/${targetId}`} className="block">{content}</Link>;
 }

@@ -133,6 +133,16 @@ export function checkAnswer(expected: string[], given: string[]): CheckResult {
   return { correct: score === 1, perWord, score };
 }
 
+/** Render the verse with only the first letter of each word visible. */
+export function renderFirstLetters(text: string): string {
+  return text.split(/(\s+)/).map(tok => {
+    if (/^\s+$/.test(tok)) return tok;
+    const m = tok.match(/^([^\w]*)(\w+)(.*)$/);
+    if (!m) return tok;
+    return `${m[1]}${m[2][0]}${'_'.repeat(Math.max(0, m[2].length - 1))}${m[3]}`;
+  }).join('');
+}
+
 /** For "recall" difficulty: compare full text token-by-token. */
 export function checkFullRecall(expectedText: string, givenText: string): CheckResult {
   const expectedWords = tokenize(expectedText).tokens

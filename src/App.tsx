@@ -13,6 +13,7 @@ import Pray from './pages/Pray';
 import Books from './pages/Books';
 import Saved from './pages/Saved';
 import Plan from './pages/Plan';
+import Study from './pages/Study';
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
             <Route path="/books" element={<Books />} />
             <Route path="/saved" element={<Saved />} />
             <Route path="/plan/:id" element={<Plan />} />
+            <Route path="/study/:cardId" element={<Study />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/how-to" element={<HowTo />} />
             <Route path="*" element={<Navigate to="/" replace />} />

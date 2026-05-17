@@ -5,7 +5,7 @@ import {
   Sparkles, Highlighter, ZoomIn, ZoomOut, X, Save, Pencil, BookText
 } from 'lucide-react';
 import { useScripture, TRANSLATIONS } from '../components/ScriptureProvider';
-import { bookById, BOOKS, type BookInfo, type Verse, formatRef } from '../lib/bible';
+import { bookById, BOOKS, type BookInfo, type Verse } from '../lib/bible';
 import BookPicker from '../components/BookPicker';
 import { db, getSettings, updateSettings, type Settings, type Highlight } from '../db/db';
 import { createCard } from '../lib/srs';
@@ -15,26 +15,34 @@ import prophecyCards from '../data/prophecy-cards.json';
 import crossRefs from '../data/cross-references.json';
 
 interface AttachedCards {
-  history: { id: string; title: string; body: string }[];
+  history: { id: string; title: string; body: string; sources?: string[] }[];
   prophecy: { id: string; title: string }[];
 }
 
 function getAttachedCards(book: BookInfo, chapter: number): AttachedCards {
   const ref = `${book.name} ${chapter}`;
-  const h = (historyCards as { id: string; title: string; body: string; refs: string[] }[]).filter(c =>
+  const h = (historyCards as { id: string; title: string; body: string; refs: string[]; sources?: string[] }[]).filter(c =>
     c.refs.some(r => r === ref || r.startsWith(ref + ':') || r.startsWith(book.name + ' ' + chapter + '-'))
   );
   const p = (prophecyCards as { id: string; title: string; prediction: { ref: string }; fulfillment: { ref: string } }[]).filter(c =>
     c.prediction.ref.startsWith(ref) || c.fulfillment.ref.startsWith(ref)
   );
   return {
-    history: h.map(c => ({ id: c.id, title: c.title, body: c.body })),
+    history: h.map(c => ({ id: c.id, title: c.title, body: c.body, sources: c.sources })),
     prophecy: p.map(c => ({ id: c.id, title: c.title }))
   };
 }
 
 const HIGHLIGHT_COLORS = ['yellow', 'green', 'blue', 'pink', 'orange'] as const;
 type HL = typeof HIGHLIGHT_COLORS[number];
+
+const HL_SWATCH: Record<HL, string> = {
+  yellow: '#FDE68A',
+  green: '#6EE7B7',
+  blue: '#93C5FD',
+  pink: '#F472B6',
+  orange: '#FDBA74'
+};
 
 const HL_BG_LIGHT: Record<HL, string> = {
   yellow: 'rgba(252, 211, 77, 0.5)',
@@ -63,10 +71,9 @@ export default function Read() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [selectedVerse, setSelectedVerse] = useState<Verse | null>(null);
   const [toast, setToast] = useState<string | null>(null);
-  const [zoomDelta, setZoomDelta] = useState(0);     // ranges -2..+3
+  const [zoomDelta, setZoomDelta] = useState(0);
   const [studyVerse, setStudyVerse] = useState<{ verse: Verse; ref: string } | null>(null);
   const [noteVerse, setNoteVerse] = useState<{ verse: Verse; ref: string; existingNote: string } | null>(null);
-  const [historyOpen, setHistoryOpen] = useState<string | null>(null);
 
   const bookId = params.book ?? 'john';
   const chapter = Math.max(1, parseInt(params.chapter ?? '1', 10));
@@ -74,7 +81,6 @@ export default function Read() {
 
   const cards = getAttachedCards(book, chapter);
 
-  // Highlights for this chapter
   const highlights = useLiveQuery(
     () => db.highlights.where('[bookId+chapter]').equals([book.id, chapter]).toArray(),
     [book.id, chapter],
@@ -123,37 +129,40 @@ export default function Read() {
   const flash = (msg: string) => { setToast(msg); window.setTimeout(() => setToast(null), 1800); };
 
   const bookmark = async (v: Verse, openNote = false) => {
-    const ref = `${book.name} ${chapter}:${v.v}`;
-    const existing = await db.bookmarks.where('ref').equals(ref).first();
+    const refStr = `${book.name} ${chapter}:${v.v}`;
+    const existing = await db.bookmarks.where('ref').equals(refStr).first();
     if (existing) {
-      if (openNote) setNoteVerse({ verse: v, ref, existingNote: existing.note ?? '' });
-      else flash(`Already bookmarked`);
+      if (openNote) {
+        setSelectedVerse(null);
+        setNoteVerse({ verse: v, ref: refStr, existingNote: existing.note ?? '' });
+      } else flash(`Already bookmarked`);
       return;
     }
-    await db.bookmarks.add({ ref, text: v.t, createdAt: Date.now() });
-    if (openNote) setNoteVerse({ verse: v, ref, existingNote: '' });
-    else flash(`Bookmarked ${ref}`);
+    await db.bookmarks.add({ ref: refStr, text: v.t, createdAt: Date.now() });
+    setSelectedVerse(null);
+    if (openNote) setNoteVerse({ verse: v, ref: refStr, existingNote: '' });
+    else flash(`Bookmarked ${refStr}`);
   };
 
   const toMemorize = async (v: Verse) => {
-    const ref = `${book.name} ${chapter}:${v.v}`;
-    const exists = await db.memoryCards.where('ref').equals(ref).first();
+    const refStr = `${book.name} ${chapter}:${v.v}`;
+    const exists = await db.memoryCards.where('ref').equals(refStr).first();
+    setSelectedVerse(null);
     if (exists) { flash(`Already in memory deck`); return; }
-    await db.memoryCards.add(createCard(ref, v.t));
-    flash(`Added ${ref} to memorize`);
+    await db.memoryCards.add(createCard(refStr, v.t));
+    flash(`Added ${refStr} to memorize`);
   };
 
   const highlight = async (v: Verse, color: HL) => {
-    const ref = `${book.name} ${chapter}:${v.v}`;
-    const existing = await db.highlights.where('ref').equals(ref).first();
+    const refStr = `${book.name} ${chapter}:${v.v}`;
+    const existing = await db.highlights.where('ref').equals(refStr).first();
     if (existing) {
       if (existing.color === color) await db.highlights.delete(existing.id!);
       else await db.highlights.update(existing.id!, { color });
     } else {
-      const entry: Omit<Highlight, 'id'> = { ref, bookId: book.id, chapter, verse: v.v, color, createdAt: Date.now() };
+      const entry: Omit<Highlight, 'id'> = { ref: refStr, bookId: book.id, chapter, verse: v.v, color, createdAt: Date.now() };
       await db.highlights.add(entry as Highlight);
     }
-    setSelectedVerse(null);
   };
 
   const baseSize = SIZE_SCALE[settings?.fontSize ?? 'md'];
@@ -189,74 +198,35 @@ export default function Read() {
         />
       </div>
 
-      {selectedVerse && (
-        <div className="card animate-slide-up space-y-3">
-          <div className="text-sm font-medium text-gold-700 dark:text-gold-400">
-            {formatRef({ book, chapter, verseStart: selectedVerse.v })}
-          </div>
-
-          <div className="flex gap-2 flex-wrap">
-            <button onClick={() => bookmark(selectedVerse, false)} className="chip">
-              <BookmarkIcon size={14} className="mr-1.5" /> Save
-            </button>
-            <button onClick={() => bookmark(selectedVerse, true)} className="chip">
-              <Pencil size={14} className="mr-1.5" /> Save + note
-            </button>
-            <button onClick={() => toMemorize(selectedVerse)} className="chip">
-              <Brain size={14} className="mr-1.5" /> Memorize
-            </button>
-            <button onClick={() => setStudyVerse({ verse: selectedVerse, ref: `${book.name} ${chapter}:${selectedVerse.v}` })} className="chip">
-              <BookText size={14} className="mr-1.5" /> Study
-            </button>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Highlighter size={14} className="text-ink-500 dark:text-ink-300/70" />
-            <div className="flex gap-1.5">
-              {HIGHLIGHT_COLORS.map(c => (
-                <button
-                  key={c}
-                  onClick={() => highlight(selectedVerse, c)}
-                  className={`w-7 h-7 rounded-full border-2 transition ${
-                    highlightMap.get(selectedVerse.v) === c ? 'border-ink-900 dark:border-ink-100 scale-110' : 'border-white/60 dark:border-ink-700'
-                  } hl-${c}`}
-                  title={`Highlight ${c}`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
       {(cards.history.length > 0 || cards.prophecy.length > 0) && (
         <div className="card space-y-3">
           <div className="section-label flex items-center gap-1.5"><Sparkles size={14} /> Study this passage</div>
           <div className="flex flex-col gap-2">
             {cards.history.map(c => (
-              <button
+              <Link
                 key={c.id}
-                onClick={() => setHistoryOpen(historyOpen === c.id ? null : c.id)}
-                className="text-left text-sm px-3 py-2 rounded-xl border border-gold-100 dark:border-ink-700 bg-gold-50/60 dark:bg-ink-700/40"
+                to={`/study/${c.id}?from=${book.id}/${chapter}`}
+                className="text-left text-sm px-4 py-3 rounded-xl border border-gold-200 dark:border-ink-700 bg-gold-50/60 dark:bg-ink-700/40 hover:bg-gold-100 dark:hover:bg-ink-700 transition flex items-center justify-between gap-2"
               >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-xs uppercase tracking-wide text-gold-700 dark:text-gold-400 font-semibold mr-2">History</span>
-                    {c.title}
-                  </div>
-                  <ChevronRight size={14} className={`text-ink-400 transition ${historyOpen === c.id ? 'rotate-90' : ''}`} />
+                <div>
+                  <div className="text-xs uppercase tracking-wide text-gold-700 dark:text-gold-400 font-semibold mb-0.5">History</div>
+                  <div className="text-ink-800 dark:text-ink-100 font-medium">{c.title}</div>
                 </div>
-                {historyOpen === c.id && (
-                  <div className="mt-3 pt-3 border-t border-gold-100 dark:border-ink-700 text-ink-700 dark:text-ink-200 leading-relaxed whitespace-pre-wrap">
-                    {c.body}
-                  </div>
-                )}
-              </button>
+                <ChevronRight size={16} className="text-gold-600 dark:text-gold-400 flex-shrink-0" />
+              </Link>
             ))}
             {cards.prophecy.map(c => (
-              <div key={c.id} className="text-sm px-3 py-2 rounded-xl border border-gold-100 dark:border-ink-700 bg-gold-50/60 dark:bg-ink-700/40">
-                <span className="text-xs uppercase tracking-wide text-gold-700 dark:text-gold-400 font-semibold mr-2">Prophecy</span>
-                {c.title}
-              </div>
+              <Link
+                key={c.id}
+                to={`/study/prophecy-${c.id}?from=${book.id}/${chapter}`}
+                className="text-left text-sm px-4 py-3 rounded-xl border border-gold-200 dark:border-ink-700 bg-gold-50/60 dark:bg-ink-700/40 hover:bg-gold-100 dark:hover:bg-ink-700 transition flex items-center justify-between gap-2"
+              >
+                <div>
+                  <div className="text-xs uppercase tracking-wide text-gold-700 dark:text-gold-400 font-semibold mb-0.5">Prophecy</div>
+                  <div className="text-ink-800 dark:text-ink-100 font-medium">{c.title}</div>
+                </div>
+                <ChevronRight size={16} className="text-gold-600 dark:text-gold-400 flex-shrink-0" />
+              </Link>
             ))}
           </div>
         </div>
@@ -274,6 +244,21 @@ export default function Read() {
         currentBookId={book.id}
         currentChapter={chapter}
       />
+
+      {/* Verse action floating popup */}
+      {selectedVerse && (
+        <VerseActionModal
+          verse={selectedVerse}
+          verseRef={`${book.name} ${chapter}:${selectedVerse.v}`}
+          activeHighlight={highlightMap.get(selectedVerse.v)}
+          onClose={() => setSelectedVerse(null)}
+          onBookmark={() => bookmark(selectedVerse, false)}
+          onBookmarkWithNote={() => bookmark(selectedVerse, true)}
+          onMemorize={() => toMemorize(selectedVerse)}
+          onStudy={() => { setStudyVerse({ verse: selectedVerse, ref: `${book.name} ${chapter}:${selectedVerse.v}` }); setSelectedVerse(null); }}
+          onHighlight={c => highlight(selectedVerse, c)}
+        />
+      )}
 
       {studyVerse && (
         <StudyModal verse={studyVerse.verse} verseRef={studyVerse.ref} onClose={() => setStudyVerse(null)} />
@@ -313,7 +298,6 @@ function ChapterRenderer({ verses, scale, highlightMap, selectedVerse, onVerseCl
   if (verses.length === 0) {
     return <div className="text-center text-ink-500 dark:text-ink-300/70 py-8">Loading scripture…</div>;
   }
-  // We detect dark mode via the html class
   const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
   return (
     <div
@@ -341,6 +325,84 @@ function ChapterRenderer({ verses, scale, highlightMap, selectedVerse, onVerseCl
           </span>
         );
       })}
+    </div>
+  );
+}
+
+function VerseActionModal({
+  verse, verseRef, activeHighlight, onClose,
+  onBookmark, onBookmarkWithNote, onMemorize, onStudy, onHighlight
+}: {
+  verse: Verse;
+  verseRef: string;
+  activeHighlight?: HL;
+  onClose: () => void;
+  onBookmark: () => void;
+  onBookmarkWithNote: () => void;
+  onMemorize: () => void;
+  onStudy: () => void;
+  onHighlight: (c: HL) => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-ink-900/50 backdrop-blur-sm animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md bg-white dark:bg-ink-800 rounded-t-2xl sm:rounded-2xl border border-gold-200 dark:border-ink-700 shadow-soft p-4 space-y-4 animate-slide-up"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between">
+          <div className="text-sm font-medium text-gold-700 dark:text-gold-400">{verseRef}</div>
+          <button onClick={onClose} className="text-ink-500 hover:text-ink-800 dark:hover:text-ink-100"><X size={18} /></button>
+        </div>
+
+        <div className="text-sm text-ink-700 dark:text-ink-200 italic font-serif border-l-2 border-gold-300 dark:border-gold-700 pl-3">
+          {verse.t}
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <button onClick={onBookmark} className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-gold-200 dark:border-ink-600 text-ink-800 dark:text-ink-100 font-medium text-sm hover:bg-gold-50 dark:hover:bg-ink-700 transition">
+            <BookmarkIcon size={16} /> Save
+          </button>
+          <button onClick={onBookmarkWithNote} className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-gold-200 dark:border-ink-600 text-ink-800 dark:text-ink-100 font-medium text-sm hover:bg-gold-50 dark:hover:bg-ink-700 transition">
+            <Pencil size={16} /> Save + note
+          </button>
+          <button onClick={onMemorize} className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-gold-200 dark:border-ink-600 text-ink-800 dark:text-ink-100 font-medium text-sm hover:bg-gold-50 dark:hover:bg-ink-700 transition">
+            <Brain size={16} /> Memorize
+          </button>
+          <button onClick={onStudy} className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-gold-200 dark:border-ink-600 text-ink-800 dark:text-ink-100 font-medium text-sm hover:bg-gold-50 dark:hover:bg-ink-700 transition">
+            <BookText size={16} /> Study
+          </button>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-xs font-semibold text-ink-500 dark:text-ink-300/70 uppercase tracking-wider">
+            <Highlighter size={12} /> Highlight
+          </div>
+          <div className="flex gap-2">
+            {HIGHLIGHT_COLORS.map(c => {
+              const active = activeHighlight === c;
+              return (
+                <button
+                  key={c}
+                  onClick={() => onHighlight(c)}
+                  className={`w-10 h-10 rounded-full border-2 transition shadow-soft ${
+                    active ? 'border-ink-900 dark:border-ink-100 scale-110' : 'border-white/60 dark:border-ink-700 hover:scale-105'
+                  }`}
+                  style={{ backgroundColor: HL_SWATCH[c] }}
+                  title={`${active ? 'Remove' : 'Highlight'} ${c}`}
+                />
+              );
+            })}
+          </div>
+          {activeHighlight && (
+            <p className="text-xs text-ink-500 dark:text-ink-300/70 italic">
+              Tap the active color again to remove the highlight.
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -60,7 +60,10 @@ export default function Saved() {
             >
               <div className="flex items-center justify-between gap-2">
                 <div>
-                  <div className={`inline-block w-3 h-3 rounded-full mr-2 align-middle hl-${h.color}`} />
+                  <span
+                    className="inline-block w-3 h-3 rounded-full mr-2 align-middle"
+                    style={{ backgroundColor: { yellow: '#FDE68A', green: '#6EE7B7', blue: '#93C5FD', pink: '#F472B6', orange: '#FDBA74' }[h.color] ?? '#FDE68A' }}
+                  />
                   <span className="text-sm font-medium text-gold-700 dark:text-gold-400">{h.ref}</span>
                 </div>
                 <button

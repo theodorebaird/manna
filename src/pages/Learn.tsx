@@ -106,10 +106,11 @@ function UnitSection({ unit, unlocked, unlocks, completed }: {
           const allDone = skill.lessons.every(l => completed.has(l.id));
           const state: 'locked' | 'active' | 'done' = !isUnlocked ? 'locked' : allDone ? 'done' : 'active';
           const next = skill.lessons.find(l => !completed.has(l.id))?.id ?? null;
+          const firstId = skill.lessons[0]?.id ?? null;
           const progressCount = skill.lessons.filter(l => completed.has(l.id)).length;
           return (
             <div key={skill.id}>
-              <SkillNode skill={skill} state={state} progressCount={progressCount} nextLessonId={next} />
+              <SkillNode skill={skill} state={state} progressCount={progressCount} nextLessonId={next} firstLessonId={firstId} />
             </div>
           );
         })}

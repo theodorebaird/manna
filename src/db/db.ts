@@ -7,6 +7,8 @@ export interface Settings {
   dailyXpGoal: number;
   fontSize: 'sm' | 'md' | 'lg' | 'xl';
   translationId: 'kjv' | 'asv' | 'bsb';
+  memorizeMode?: 'fill-blanks' | 'first-letters' | 'type-full' | 'read-along';
+  bibleOrder?: 'canonical' | 'chronological';
   hearts: number;
   heartsRegenAt: number;     // epoch ms
   lastReadRef: string | null;
@@ -150,6 +152,8 @@ export async function getSettings(): Promise<Settings> {
     dailyXpGoal: 30,
     fontSize: 'md',
     translationId: 'kjv',
+    memorizeMode: 'fill-blanks',
+    bibleOrder: 'canonical',
     hearts: HEART_MAX,
     heartsRegenAt: Date.now(),
     lastReadRef: null

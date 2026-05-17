@@ -88,6 +88,87 @@ export function bookById(id: string): BookInfo | undefined {
   return BY_ID[id];
 }
 
+/**
+ * Approximate chronological order of when each book was written / set,
+ * following common scholarly consensus. Used as an alternate view in
+ * the book picker — does NOT change the text of any book.
+ */
+export const CHRONOLOGICAL_ORDER: { id: string; era: string }[] = [
+  // ~2000-1500 BC
+  { id: 'job',          era: 'Patriarchal era (~1700 BC)' },
+  { id: 'genesis',      era: 'Patriarchal era (~1450 BC compiled)' },
+  // ~1500-1400 BC
+  { id: 'exodus',       era: 'Wilderness (~1445 BC)' },
+  { id: 'leviticus',    era: 'Wilderness (~1445 BC)' },
+  { id: 'numbers',      era: 'Wilderness (~1410 BC)' },
+  { id: 'deuteronomy',  era: 'Wilderness (~1406 BC)' },
+  // ~1400-1100 BC
+  { id: 'joshua',       era: 'Conquest (~1380 BC)' },
+  { id: 'judges',       era: 'Judges era (~1050 BC)' },
+  { id: 'ruth',         era: 'Judges era (~1030 BC)' },
+  // ~1050-930 BC
+  { id: '1-samuel',     era: 'United monarchy (~930 BC)' },
+  { id: '2-samuel',     era: 'United monarchy (~930 BC)' },
+  { id: 'psalms',       era: 'Largely David, ~1000 BC' },
+  { id: 'proverbs',     era: 'Solomon era (~950 BC)' },
+  { id: 'song-of-solomon', era: 'Solomon (~950 BC)' },
+  { id: 'ecclesiastes', era: 'Solomon (~935 BC)' },
+  // ~930-600 BC (kings + prophets)
+  { id: '1-kings',      era: 'Kings era (~560 BC compiled)' },
+  { id: '2-kings',      era: 'Kings era (~560 BC compiled)' },
+  { id: '1-chronicles', era: 'Post-exile (~430 BC compiled)' },
+  { id: '2-chronicles', era: 'Post-exile (~430 BC compiled)' },
+  { id: 'obadiah',      era: 'Pre-exile (~850 BC)' },
+  { id: 'joel',         era: 'Pre-exile (~830 BC)' },
+  { id: 'jonah',        era: 'Pre-exile (~780 BC)' },
+  { id: 'amos',         era: 'Pre-exile (~760 BC)' },
+  { id: 'hosea',        era: 'Pre-exile (~750 BC)' },
+  { id: 'isaiah',       era: 'Pre-exile (~700 BC)' },
+  { id: 'micah',        era: 'Pre-exile (~700 BC)' },
+  { id: 'nahum',        era: 'Pre-exile (~660 BC)' },
+  { id: 'zephaniah',    era: 'Pre-exile (~625 BC)' },
+  { id: 'habakkuk',     era: 'Pre-exile (~607 BC)' },
+  // Exile & return
+  { id: 'jeremiah',     era: 'Exile (~580 BC)' },
+  { id: 'lamentations', era: 'Exile (~586 BC)' },
+  { id: 'ezekiel',      era: 'Exile (~570 BC)' },
+  { id: 'daniel',       era: 'Exile (~535 BC)' },
+  { id: 'ezra',         era: 'Return (~450 BC)' },
+  { id: 'nehemiah',     era: 'Return (~430 BC)' },
+  { id: 'esther',       era: 'Return (~470 BC)' },
+  { id: 'haggai',       era: 'Return (~520 BC)' },
+  { id: 'zechariah',    era: 'Return (~480 BC)' },
+  { id: 'malachi',      era: 'Return (~430 BC)' },
+  // New Testament
+  { id: 'james',        era: 'Earliest NT letter (~45 AD)' },
+  { id: 'galatians',    era: 'Pauline (~49 AD)' },
+  { id: '1-thessalonians', era: 'Pauline (~51 AD)' },
+  { id: '2-thessalonians', era: 'Pauline (~52 AD)' },
+  { id: '1-corinthians', era: 'Pauline (~55 AD)' },
+  { id: '2-corinthians', era: 'Pauline (~56 AD)' },
+  { id: 'romans',       era: 'Pauline (~57 AD)' },
+  { id: 'mark',         era: 'Gospel (~55 AD)' },
+  { id: 'matthew',      era: 'Gospel (~60 AD)' },
+  { id: 'luke',         era: 'Gospel (~62 AD)' },
+  { id: 'acts',         era: 'Luke vol. 2 (~62 AD)' },
+  { id: 'ephesians',    era: 'Prison letter (~60 AD)' },
+  { id: 'colossians',   era: 'Prison letter (~60 AD)' },
+  { id: 'philippians',  era: 'Prison letter (~61 AD)' },
+  { id: 'philemon',     era: 'Prison letter (~61 AD)' },
+  { id: '1-timothy',    era: 'Pastoral (~63 AD)' },
+  { id: '2-timothy',    era: 'Pastoral (~66 AD)' },
+  { id: 'titus',        era: 'Pastoral (~63 AD)' },
+  { id: '1-peter',      era: '(~63 AD)' },
+  { id: '2-peter',      era: '(~67 AD)' },
+  { id: 'hebrews',      era: '(~67 AD)' },
+  { id: 'jude',         era: '(~80 AD)' },
+  { id: 'john',         era: 'Gospel (~90 AD)' },
+  { id: '1-john',       era: '(~90 AD)' },
+  { id: '2-john',       era: '(~90 AD)' },
+  { id: '3-john',       era: '(~90 AD)' },
+  { id: 'revelation',   era: 'Apocalypse (~95 AD)' }
+];
+
 export interface ParsedRef {
   book: BookInfo;
   chapter: number;
