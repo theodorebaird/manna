@@ -37,16 +37,19 @@ interface Curriculum {
 
 const rawData = lessonsData as Curriculum;
 
-// Filter out memorize-type lessons from the Learn skill tree — memorization
-// lives in its own Memorize tab. Skills with no lessons after filtering are
-// dropped so we don't render empty skill nodes.
+// Filter out interactive lesson types from the Learn skill tree — Learn is
+// for reading and study only. Quizzes and memorize-type practice live in
+// their own places (Memorize tab for memorization; quizzes removed entirely
+// for now). Skills/units that end up empty are dropped so we don't render
+// empty skill nodes.
+const INTERACTIVE_TYPES = new Set(['quiz', 'memorize']);
 const data: Curriculum = {
   units: rawData.units.map(unit => ({
     ...unit,
     skills: unit.skills
       .map(skill => ({
         ...skill,
-        lessons: skill.lessons.filter(l => l.type !== 'memorize')
+        lessons: skill.lessons.filter(l => !INTERACTIVE_TYPES.has(l.type))
       }))
       .filter(skill => skill.lessons.length > 0)
   })).filter(unit => unit.skills.length > 0)

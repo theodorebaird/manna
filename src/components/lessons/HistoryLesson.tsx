@@ -1,11 +1,11 @@
-import { useState } from 'react';
 import historyCards from '../../data/history-cards.json';
 import type { QuizQuestion } from '../../lib/quiz';
-import QuizLesson from './QuizLesson';
 
 interface Props {
   cardId: string;
-  checkQuestion: QuizQuestion;
+  // Kept in the type for compatibility with existing lessons.json data, but
+  // no longer used — the comprehension check was removed so Learn stays static.
+  checkQuestion?: QuizQuestion;
   onDone: (result: { passed: boolean; score: number; xp: number }) => void;
 }
 
@@ -17,15 +17,10 @@ interface HistoryCard {
   sources?: string[];
 }
 
-export default function HistoryLesson({ cardId, checkQuestion, onDone }: Props) {
+export default function HistoryLesson({ cardId, onDone }: Props) {
   const card = (historyCards as HistoryCard[]).find(c => c.id === cardId);
-  const [phase, setPhase] = useState<'read' | 'check'>('read');
 
   if (!card) return <div className="text-rose-500">Missing card: {cardId}</div>;
-
-  if (phase === 'check') {
-    return <QuizLesson questions={[checkQuestion]} onDone={onDone} />;
-  }
 
   return (
     <div className="space-y-5 animate-fade-in">
@@ -44,8 +39,11 @@ export default function HistoryLesson({ cardId, checkQuestion, onDone }: Props) 
         )}
       </div>
 
-      <button onClick={() => setPhase('check')} className="btn-primary w-full">
-        I've read it — quick check
+      <button
+        onClick={() => onDone({ passed: true, score: 100, xp: 10 })}
+        className="btn-primary w-full"
+      >
+        Mark complete (+10 XP)
       </button>
     </div>
   );
