@@ -169,6 +169,8 @@ export const CHRONOLOGICAL_ORDER: { id: string; era: string }[] = [
   { id: 'revelation',   era: 'Apocalypse (~95 AD)' }
 ];
 
+export const CHRONOLOGICAL_IDS: string[] = CHRONOLOGICAL_ORDER.map(c => c.id);
+
 export interface ParsedRef {
   book: BookInfo;
   chapter: number;

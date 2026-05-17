@@ -5,9 +5,10 @@ import {
   Sparkles, Highlighter, ZoomIn, ZoomOut, X, Save, Pencil, BookText
 } from 'lucide-react';
 import { useScripture, TRANSLATIONS } from '../components/ScriptureProvider';
-import { bookById, BOOKS, type BookInfo, type Verse } from '../lib/bible';
+import { bookById, BOOKS, CHRONOLOGICAL_IDS, type BookInfo, type Verse } from '../lib/bible';
 import BookPicker from '../components/BookPicker';
 import { db, getSettings, updateSettings, type Settings, type Highlight } from '../db/db';
+import { CalendarRange, BookOpenCheck } from 'lucide-react';
 import { createCard } from '../lib/srs';
 import { useLiveQuery } from 'dexie-react-hooks';
 import historyCards from '../data/history-cards.json';
@@ -111,19 +112,33 @@ export default function Read() {
     })();
   }, [book.id, chapter, params.book, params.chapter, getChapter, navigate]);
 
+  const order = settings?.bibleOrder === 'chronological' ? 'chronological' : 'canonical';
+  const orderedIds = order === 'chronological' ? CHRONOLOGICAL_IDS : BOOKS.map(b => b.id);
+
   const goPrev = () => {
     if (chapter > 1) navigate(`/read/${book.id}/${chapter - 1}`);
     else {
-      const idx = BOOKS.findIndex(b => b.id === book.id);
-      if (idx > 0) { const prev = BOOKS[idx - 1]; navigate(`/read/${prev.id}/${prev.chapters}`); }
+      const idx = orderedIds.indexOf(book.id);
+      if (idx > 0) {
+        const prev = bookById(orderedIds[idx - 1]);
+        if (prev) navigate(`/read/${prev.id}/${prev.chapters}`);
+      }
     }
   };
   const goNext = () => {
     if (chapter < book.chapters) navigate(`/read/${book.id}/${chapter + 1}`);
     else {
-      const idx = BOOKS.findIndex(b => b.id === book.id);
-      if (idx < BOOKS.length - 1) navigate(`/read/${BOOKS[idx + 1].id}/1`);
+      const idx = orderedIds.indexOf(book.id);
+      if (idx >= 0 && idx < orderedIds.length - 1) {
+        const nxt = bookById(orderedIds[idx + 1]);
+        if (nxt) navigate(`/read/${nxt.id}/1`);
+      }
     }
+  };
+
+  const setOrder = async (m: 'canonical' | 'chronological') => {
+    const next = await updateSettings({ bibleOrder: m });
+    setSettings(next);
   };
 
   const flash = (msg: string) => { setToast(msg); window.setTimeout(() => setToast(null), 1800); };
@@ -170,21 +185,41 @@ export default function Read() {
 
   return (
     <div className="space-y-4 animate-fade-in">
-      <header className="flex items-center justify-between gap-2">
-        <button onClick={() => setPicker(true)} className="btn-outline flex-1">
-          <BookOpen size={18} />
-          {book.name} {chapter}
-        </button>
-        <div className="flex items-center gap-1">
-          <button onClick={() => setZoomDelta(z => Math.max(-2, z - 1))} className="w-9 h-9 rounded-full border border-gold-200 dark:border-ink-600 text-ink-700 dark:text-ink-200 flex items-center justify-center" title="Smaller">
-            <ZoomOut size={16} />
+      <header className="space-y-2">
+        <div className="flex items-center justify-between gap-2">
+          <button onClick={() => setPicker(true)} className="btn-outline flex-1">
+            <BookOpen size={18} />
+            {book.name} {chapter}
           </button>
-          <button onClick={() => setZoomDelta(z => Math.min(3, z + 1))} className="w-9 h-9 rounded-full border border-gold-200 dark:border-ink-600 text-ink-700 dark:text-ink-200 flex items-center justify-center" title="Larger">
-            <ZoomIn size={16} />
+          <div className="flex items-center gap-1">
+            <button onClick={() => setZoomDelta(z => Math.max(-2, z - 1))} className="w-9 h-9 rounded-full border border-gold-200 dark:border-ink-600 text-ink-700 dark:text-ink-200 flex items-center justify-center" title="Smaller">
+              <ZoomOut size={16} />
+            </button>
+            <button onClick={() => setZoomDelta(z => Math.min(3, z + 1))} className="w-9 h-9 rounded-full border border-gold-200 dark:border-ink-600 text-ink-700 dark:text-ink-200 flex items-center justify-center" title="Larger">
+              <ZoomIn size={16} />
+            </button>
+            <Link to="/settings" className="chip text-xs" title="Change translation in Settings">
+              {translation?.short ?? 'KJV'}
+            </Link>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-ink-100/70 dark:bg-ink-800/70 border border-gold-100 dark:border-ink-700">
+          <button
+            onClick={() => setOrder('canonical')}
+            className={`py-1.5 rounded-lg text-xs font-medium transition flex items-center justify-center gap-1.5 ${
+              order === 'canonical' ? 'bg-white dark:bg-ink-700 text-gold-700 dark:text-gold-300 shadow-soft' : 'text-ink-600 dark:text-ink-300'
+            }`}
+          >
+            <BookOpenCheck size={13} /> Canonical
           </button>
-          <Link to="/settings" className="chip text-xs" title="Change translation in Settings">
-            {translation?.short ?? 'KJV'}
-          </Link>
+          <button
+            onClick={() => setOrder('chronological')}
+            className={`py-1.5 rounded-lg text-xs font-medium transition flex items-center justify-center gap-1.5 ${
+              order === 'chronological' ? 'bg-white dark:bg-ink-700 text-gold-700 dark:text-gold-300 shadow-soft' : 'text-ink-600 dark:text-ink-300'
+            }`}
+          >
+            <CalendarRange size={13} /> Chronological
+          </button>
         </div>
       </header>
 
