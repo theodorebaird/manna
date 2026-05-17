@@ -20,6 +20,14 @@ export default function Lesson() {
     (async () => setSettings(await getSettings()))();
   }, []);
 
+  // Reset per-lesson state whenever the URL id changes — otherwise React Router
+  // reuses this component instance and the previous lesson's Results screen
+  // remains visible when the user clicks "Next lesson".
+  useEffect(() => {
+    setOutcome(null);
+    setNextLessonId(null);
+  }, [id]);
+
   // If no id in URL, navigate back to Learn (in an effect — never during render)
   useEffect(() => {
     if (!id) navigate('/learn', { replace: true });
@@ -67,7 +75,7 @@ export default function Lesson() {
       </header>
 
       {!outcome ? (
-        <LessonRunner lesson={lesson} onComplete={complete} />
+        <LessonRunner key={lesson.id} lesson={lesson} onComplete={complete} />
       ) : (
         <Results outcome={outcome} nextLessonId={nextLessonId} onRetry={() => setOutcome(null)} />
       )}
