@@ -12,10 +12,16 @@ import './index.css';
 // browser's async voice loading and quietly falls back to the default voice.
 preloadVoices().catch(() => {});
 
-// Auto-detect new app versions and expose a global helper that any page can
-// call to force an update. The Settings page surfaces both as a button.
-registerSW({
+// Track whether the service worker has reported a new version waiting.
+// onNeedRefresh fires when the SW finds a new build and reaches 'waiting'.
+let needRefresh = false;
+
+// vite-plugin-pwa's helper: calling updateSW(true) tells the waiting SW to
+// skip waiting and then reloads the page. Safe to call even when there's
+// nothing to update — it just resolves.
+const updateSW = registerSW({
   onNeedRefresh() {
+    needRefresh = true;
     window.dispatchEvent(new CustomEvent('manna:update-available'));
   },
   onOfflineReady() {
@@ -25,45 +31,55 @@ registerSW({
 
 type UpdateResult = 'updated' | 'up-to-date' | 'error';
 
-(window as unknown as { __mannaUpdate?: () => Promise<UpdateResult> }).__mannaUpdate = async (): Promise<UpdateResult> => {
-  // In dev (or if SW unavailable), just report up-to-date.
-  if (!('serviceWorker' in navigator)) return 'up-to-date';
-  const reg = await navigator.serviceWorker.getRegistration();
-  if (!reg) return 'up-to-date';
-
-  // Listen for updatefound BEFORE calling update() so we don't miss it.
-  // Also detect a SW that's already waiting (previous tab triggered update).
-  let foundUpdate = !!(reg.waiting || reg.installing);
-
-  const updateFound: Promise<boolean> = new Promise(resolve => {
-    let done = false;
-    const finish = (val: boolean) => { if (!done) { done = true; resolve(val); } };
-    if (foundUpdate) { finish(true); return; }
-    const onUpdateFound = () => finish(true);
-    reg.addEventListener('updatefound', onUpdateFound);
-    // Give the SW up to 4s to fetch the new manifest from the server.
-    setTimeout(() => {
-      reg.removeEventListener('updatefound', onUpdateFound);
-      finish(!!(reg.waiting || reg.installing));
-    }, 4000);
-  });
-
-  try {
-    await Promise.race([
-      reg.update(),
-      new Promise<void>((_, rej) => setTimeout(() => rej(new Error('timeout')), 6000))
-    ]);
-  } catch {
-    return 'error';
+async function mannaUpdate(): Promise<UpdateResult> {
+  // No service worker = no caching layer to update against. Just do a clean reload.
+  if (!('serviceWorker' in navigator)) {
+    location.replace('/?u=' + Date.now());
+    return 'updated';
   }
 
-  foundUpdate = await updateFound;
-  if (!foundUpdate) return 'up-to-date';
+  const reg = await navigator.serviceWorker.getRegistration();
+  if (!reg) {
+    // No SW registered (first visit, in flight). Nothing to update — but reload
+    // safely so they get the latest from the network.
+    return 'up-to-date';
+  }
 
-  // New version is installing or waiting — give the install a moment, then reload.
-  await new Promise(r => setTimeout(r, 800));
+  // Fast path: we already know there's a waiting/installing SW (the onNeedRefresh
+  // callback already fired, or another tab triggered an update).
+  const hasPendingNow = () => needRefresh || !!reg.waiting || !!reg.installing;
+
+  if (!hasPendingNow()) {
+    // Force the SW to check the server for a new sw.js. This call bypasses HTTP
+    // cache by design — the SW has to go to the network to update itself.
+    try {
+      await Promise.race([
+        reg.update(),
+        new Promise<void>((_, rej) => setTimeout(() => rej(new Error('update-timeout')), 5000))
+      ]);
+    } catch {
+      return 'error';
+    }
+    // Give the SW a moment to transition into installing/waiting if there is one.
+    await new Promise(r => setTimeout(r, 1500));
+  }
+
+  if (!hasPendingNow()) {
+    return 'up-to-date';
+  }
+
+  // There's a new version. Have it skip waiting and reload.
   try {
-    if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+    // updateSW(true) sends SKIP_WAITING and reloads when the new SW activates.
+    await Promise.race([
+      updateSW(true),
+      new Promise<void>(resolve => setTimeout(resolve, 3000))
+    ]);
+  } catch {}
+
+  // Safety net: if updateSW didn't reload us within 3s (iOS quirks, etc.),
+  // clear caches and reload ourselves.
+  try {
     if ('caches' in window) {
       const names = await caches.keys();
       await Promise.all(names.map(n => caches.delete(n)));
@@ -71,7 +87,9 @@ type UpdateResult = 'updated' | 'up-to-date' | 'error';
   } catch {}
   location.replace('/?u=' + Date.now());
   return 'updated';
-};
+}
+
+(window as unknown as { __mannaUpdate?: () => Promise<UpdateResult> }).__mannaUpdate = mannaUpdate;
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

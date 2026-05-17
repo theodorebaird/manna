@@ -6,7 +6,10 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // 'prompt' (vs 'autoUpdate') makes the SW reach 'waiting' state when a
+      // new version is found, so onNeedRefresh fires reliably and the in-app
+      // update button can both detect AND install the new version on demand.
+      registerType: 'prompt',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'Manna — Daily Bread for Your Soul',

@@ -41,11 +41,11 @@ export default function Settings() {
       return;
     }
     const result = await fn();
-    setUpdating(false);
     if (result === 'updated') {
-      // Page is reloading; nothing more to do
+      // Page is reloading. Leave the spinner up for visual continuity.
       return;
     }
+    setUpdating(false);
     setUpdateResult(result);
   };
 
