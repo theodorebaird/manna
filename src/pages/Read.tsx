@@ -213,7 +213,7 @@ export default function Read() {
               order === 'canonical' ? 'bg-white dark:bg-ink-700 text-gold-700 dark:text-gold-300 shadow-soft' : 'text-ink-600 dark:text-ink-300'
             }`}
           >
-            <BookOpenCheck size={15} /> Canonical
+            <BookOpenCheck size={15} /> Traditional
           </button>
           <button
             onClick={() => setOrder('chronological')}
