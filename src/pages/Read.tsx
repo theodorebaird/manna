@@ -176,7 +176,9 @@ export default function Read() {
 
   const playAudio = () => {
     if (!ttsSupported() || verses.length === 0) return;
-    const chunks = verses.map(v => ({ text: `Verse ${v.v}. ${v.t}`, meta: { verse: v.v } }));
+    // Just the verse text — verse numbers are visible on screen and highlighted
+    // as we read, so no need to announce them aloud.
+    const chunks = verses.map(v => ({ text: v.t, meta: { verse: v.v } }));
     setAudioState('playing');
     speakerRef.speak(chunks, {
       voiceURI: settings?.voiceURI ?? null,
