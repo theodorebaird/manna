@@ -65,28 +65,36 @@ export function getVoices(): Promise<SpeechSynthesisVoice[]> {
 // ship dozens of named voices; we map the most common ones here. Voices not
 // in either list default to 'other'.
 const MALE_NAMES = new Set([
-  'aaron', 'alex', 'albert', 'arthur', 'bahh', 'bruce', 'daniel', 'david',
-  'diego', 'enrique', 'fred', 'george', 'gordon', 'guy', 'hattori', 'james',
-  'jorge', 'juan', 'klaus', 'lars', 'lee', 'leon', 'luca', 'maged', 'magnus',
-  'mark', 'martin', 'matej', 'matteo', 'mateusz', 'miguel', 'milos', 'oliver',
-  'otoya', 'paolo', 'paul', 'pavel', 'pierre', 'reed', 'rishi', 'rocko',
-  'sean', 'stephan', 'stephane', 'tarik', 'thomas', 'tom', 'xander', 'yannick',
-  'yuri', 'ivan', 'anatoly', 'eddy', 'flo', 'grandpa', 'jamie', 'noah',
-  'ryan', 'matias', 'jacques'
+  // Apple iOS / macOS English male voices
+  'aaron', 'alex', 'albert', 'arthur', 'bahh', 'bruce', 'daniel', 'eddy',
+  'fred', 'gordon', 'jamie', 'junior', 'noah', 'ralph', 'reed', 'rishi',
+  'rocko', 'tom', 'whisper',
+  // Microsoft Windows English male voices
+  'david', 'mark', 'george', 'guy', 'eric', 'james', 'ryan', 'sean',
+  // Other / international male names commonly used by TTS engines
+  'anatoly', 'diego', 'enrique', 'hattori', 'ivan', 'jorge', 'juan',
+  'klaus', 'lars', 'lee', 'leon', 'luca', 'maged', 'magnus', 'martin',
+  'matej', 'mateusz', 'matias', 'matteo', 'miguel', 'milos', 'oliver',
+  'otoya', 'paolo', 'paul', 'pavel', 'pierre', 'stephan', 'stephane',
+  'tarik', 'thomas', 'xander', 'yannick', 'yuri', 'jacques', 'grandpa'
 ]);
 
 const FEMALE_NAMES = new Set([
-  'aaliyah', 'agnes', 'alice', 'allison', 'amelie', 'ana', 'anna', 'audrey',
-  'ava', 'carmit', 'catarina', 'damayanti', 'daria', 'elena', 'ellen', 'eva',
-  'evelyn', 'fatima', 'federica', 'fiona', 'flo', 'gabriela', 'grandma',
-  'hazel', 'helena', 'inés', 'ines', 'iveta', 'joana', 'joelle', 'kanya',
-  'karen', 'kate', 'kathy', 'kyoko', 'laila', 'laura', 'lekha', 'libby',
-  'luciana', 'magdalena', 'mariam', 'mariska', 'martha', 'mei-jia', 'melina',
-  'milena', 'monica', 'moira', 'nicky', 'nora', 'paulina', 'rishi', 'rocko',
-  'sabina', 'samantha', 'sara', 'satu', 'serena', 'sin-ji', 'soumya', 'susan',
-  'tessa', 'ting-ting', 'trinoids', 'vani', 'veena', 'vicki', 'victoria',
-  'wendy', 'whisper', 'yelda', 'yuna', 'zira', 'zosia', 'zuzana', 'tatyana',
-  'milana', 'milena', 'sandy', 'shelley', 'reed', 'maria'
+  // Apple iOS / macOS English female voices
+  'agnes', 'allison', 'ava', 'fiona', 'flo', 'karen', 'kate', 'kathy',
+  'martha', 'moira', 'nicky', 'samantha', 'serena', 'sandy', 'shelley',
+  'siri', 'susan', 'tessa', 'veena', 'vicki', 'victoria',
+  // Microsoft Windows English female voices
+  'zira', 'hazel', 'libby', 'aria', 'jenny',
+  // Other / international female names commonly used by TTS engines
+  'aaliyah', 'alice', 'amelie', 'ana', 'anna', 'audrey', 'carmit',
+  'catarina', 'damayanti', 'daria', 'elena', 'ellen', 'eva', 'evelyn',
+  'fatima', 'federica', 'gabriela', 'grandma', 'helena', 'inés', 'ines',
+  'iveta', 'joana', 'joelle', 'kanya', 'kyoko', 'laila', 'laura', 'lekha',
+  'luciana', 'magdalena', 'maria', 'mariam', 'mariska', 'mei-jia',
+  'melina', 'milana', 'milena', 'monica', 'nora', 'paulina', 'sabina',
+  'sara', 'satu', 'sin-ji', 'soumya', 'tatyana', 'ting-ting', 'trinoids',
+  'vani', 'wendy', 'yelda', 'yuna', 'zosia', 'zuzana'
 ]);
 
 export function inferGender(voice: SpeechSynthesisVoice): 'female' | 'male' | 'other' {

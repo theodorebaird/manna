@@ -441,13 +441,14 @@ function VoiceCard({
       </div>
 
       <div className="card-tight text-[11px] text-ink-600 dark:text-ink-300 italic space-y-1 bg-gold-50/60 dark:bg-ink-700/40">
-        <div className="font-semibold not-italic text-ink-700 dark:text-ink-200">Want more English accents?</div>
+        <div className="font-semibold not-italic text-ink-700 dark:text-ink-200">Want more voices (accents or male/female)?</div>
         <div>
-          Your device has built-in English voices for American, British, Irish, Australian, Indian, etc. To add more variants:
+          Devices usually ship with mostly female voices by default — male voices and extra accents are downloads. Bigger Siri "Enhanced" / "Premium" voices also have to be downloaded.
         </div>
-        <div><strong>iPhone/iPad:</strong> Settings → Accessibility → Spoken Content → Voices → English → download more accents.</div>
+        <div><strong>iPhone/iPad:</strong> Settings → Accessibility → Spoken Content → Voices → English → tap any voice to download. Look for Aaron, Daniel, Tom, Rishi, Arthur, Reed, Ralph, Junior (male) and Enhanced versions.</div>
         <div><strong>Android:</strong> Settings → System → Languages → Text-to-speech → install additional English voices.</div>
-        <div><strong>Mac/Windows:</strong> System Settings → Accessibility → Spoken Content (Mac) or Time & Language → Speech (Windows) → English voices.</div>
+        <div><strong>Mac/Windows:</strong> System Settings → Accessibility → Spoken Content (Mac) or Time &amp; Language → Speech (Windows) → English voices.</div>
+        <div className="text-ink-500 dark:text-ink-300/60">After downloading, fully close and reopen Manna so new voices appear in this list.</div>
       </div>
     </div>
   );
