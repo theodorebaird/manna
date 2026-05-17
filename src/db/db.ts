@@ -6,6 +6,7 @@ export interface Settings {
   themePref: 'light' | 'dark' | 'system';
   dailyXpGoal: number;
   fontSize: 'sm' | 'md' | 'lg' | 'xl';
+  translationId: 'kjv' | 'asv' | 'bsb';
   hearts: number;
   heartsRegenAt: number;     // epoch ms
   lastReadRef: string | null;
@@ -101,13 +102,21 @@ const HEART_REGEN_MS = 30 * 60 * 1000; // 30 min per heart
 
 export async function getSettings(): Promise<Settings> {
   const existing = await db.settings.get('singleton');
-  if (existing) return existing;
+  if (existing) {
+    // Backfill fields added in later versions
+    if (!('translationId' in existing) || !existing.translationId) {
+      existing.translationId = 'kjv';
+      await db.settings.put(existing);
+    }
+    return existing;
+  }
   const fresh: Settings = {
     id: 'singleton',
     userName: '',
     themePref: 'system',
     dailyXpGoal: 30,
     fontSize: 'md',
+    translationId: 'kjv',
     hearts: HEART_MAX,
     heartsRegenAt: Date.now(),
     lastReadRef: null

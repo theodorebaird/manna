@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, BookOpen, Bookmark as BookmarkIcon, Brain, Sparkles } from 'lucide-react';
-import { useScripture } from '../components/ScriptureProvider';
+import { useScripture, TRANSLATIONS } from '../components/ScriptureProvider';
 import { bookById, BOOKS, type BookInfo, type Verse, formatRef } from '../lib/bible';
 import VerseList from '../components/VerseList';
 import BookPicker from '../components/BookPicker';
@@ -32,7 +32,8 @@ function getAttachedCards(book: BookInfo, chapter: number): AttachedCards {
 export default function Read() {
   const params = useParams<{ book?: string; chapter?: string }>();
   const navigate = useNavigate();
-  const { getChapter } = useScripture();
+  const { getChapter, translationId } = useScripture();
+  const translation = TRANSLATIONS.find(t => t.id === translationId);
   const [verses, setVerses] = useState<Verse[]>([]);
   const [picker, setPicker] = useState(false);
   const [settings, setSettings] = useState<Settings | null>(null);
@@ -110,6 +111,9 @@ export default function Read() {
           <BookOpen size={18} />
           {book.name} {chapter}
         </button>
+        <Link to="/settings" className="chip text-xs" title="Change translation in Settings">
+          {translation?.short ?? 'KJV'}
+        </Link>
       </header>
 
       <div className="card">

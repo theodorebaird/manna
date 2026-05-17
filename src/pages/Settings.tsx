@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Sun, Moon, Monitor, Type, Trash2, Info, HelpCircle, ChevronRight } from 'lucide-react';
+import { Sun, Moon, Monitor, Type, Trash2, Info, HelpCircle, ChevronRight, BookOpen } from 'lucide-react';
 import { useTheme, type ThemeMode } from '../components/ThemeProvider';
 import { db, getSettings, updateSettings, type Settings as DBSettings } from '../db/db';
+import { useScripture, TRANSLATIONS, type TranslationId } from '../components/ScriptureProvider';
 
 export default function Settings() {
   const { mode, setMode } = useTheme();
+  const { translationId, setTranslation } = useScripture();
   const [s, setS] = useState<DBSettings | null>(null);
 
   useEffect(() => { (async () => setS(await getSettings()))(); }, []);
@@ -37,6 +39,38 @@ export default function Settings() {
           onChange={e => patch({ userName: e.target.value })}
           placeholder="What should we call you?"
         />
+      </div>
+
+      <div className="card space-y-3">
+        <div className="section-label flex items-center gap-1.5"><BookOpen size={14} /> Bible translation</div>
+        <div className="space-y-2">
+          {TRANSLATIONS.map(t => {
+            const active = translationId === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setTranslation(t.id as TranslationId)}
+                className={`w-full text-left px-4 py-3 rounded-xl border transition flex items-center justify-between gap-3 ${
+                  active
+                    ? 'border-gold-500 bg-gold-50 dark:bg-ink-700'
+                    : 'border-gold-100 dark:border-ink-700 hover:bg-gold-50 dark:hover:bg-ink-700'
+                }`}
+              >
+                <div className="min-w-0">
+                  <div className="font-semibold text-ink-800 dark:text-ink-100 flex items-center gap-2">
+                    {t.name}
+                    <span className="text-xs font-mono text-gold-700 dark:text-gold-400">{t.short}</span>
+                  </div>
+                  <div className="text-xs text-ink-500 dark:text-ink-300/70">{t.note} · {t.year}</div>
+                </div>
+                {active && <span className="text-gold-700 dark:text-gold-300 text-xs font-semibold">Active</span>}
+              </button>
+            );
+          })}
+        </div>
+        <p className="text-xs text-ink-500 dark:text-ink-300/70 italic">
+          All three translations are public domain and work offline. NASB, NIV, NKJV, and ESV aren't available — they require paid publisher licenses.
+        </p>
       </div>
 
       <div className="card space-y-3">
