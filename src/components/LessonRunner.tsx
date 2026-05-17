@@ -17,6 +17,7 @@ export default function LessonRunner({ lesson, onComplete }: Props) {
         <ReadLesson
           verseRef={lesson.ref}
           reflectPrompt={lesson.reflectPrompt}
+          historicalContext={lesson.historicalContext}
           onDone={xp => onComplete({ score: 100, xp, passed: true })}
         />
       );

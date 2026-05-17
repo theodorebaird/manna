@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   BookOpen, Brain, ChevronRight, Sparkles, HelpCircle,
-  Cross, Heart, Library, Bookmark
+  Cross, Heart, Library, Bookmark, RefreshCw
 } from 'lucide-react';
 import { regenerateHearts, type Settings } from '../db/db';
 import { getStreak } from '../lib/xp';
@@ -36,6 +36,7 @@ export default function Home() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [streak, setStreak] = useState(0);
   const [next, setNext] = useState<string | null>(null);
+  const [updateAvailable, setUpdateAvailable] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -47,7 +48,16 @@ export default function Home() {
       // started, so "Continue learning" always has somewhere to go.
       setNext(un.nextLessonId ?? getFirstLessonId());
     })();
+    const handler = () => setUpdateAvailable(true);
+    window.addEventListener('manna:update-available', handler);
+    return () => window.removeEventListener('manna:update-available', handler);
   }, []);
+
+  const installUpdate = async () => {
+    const fn = (window as unknown as { __mannaUpdate?: () => Promise<void> }).__mannaUpdate;
+    if (fn) await fn();
+    else location.reload();
+  };
 
   if (!settings) return <div className="card text-center text-ink-500 py-8">Loading…</div>;
 
@@ -76,6 +86,19 @@ export default function Home() {
           </Link>
         </div>
       </header>
+
+      {updateAvailable && (
+        <button
+          onClick={installUpdate}
+          className="w-full card flex items-center justify-between gap-2 border-emerald-300 dark:border-emerald-700/60 bg-emerald-50/70 dark:bg-emerald-900/20 hover:shadow-glow transition animate-fade-in"
+        >
+          <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-300">
+            <RefreshCw size={16} />
+            <span className="text-sm font-medium">New version available — tap to install</span>
+          </div>
+          <ChevronRight size={16} className="text-emerald-700 dark:text-emerald-300" />
+        </button>
+      )}
 
       {/* 1. Verse of the day */}
       <div className="card space-y-2">

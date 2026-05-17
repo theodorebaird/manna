@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Sun, Moon, Monitor, Type, Trash2, Info, HelpCircle, ChevronRight, BookOpen } from 'lucide-react';
+import { Sun, Moon, Monitor, Type, Trash2, Info, HelpCircle, ChevronRight, BookOpen, RefreshCw, Loader2 } from 'lucide-react';
 import { useTheme, type ThemeMode } from '../components/ThemeProvider';
 import { db, getSettings, updateSettings, type Settings as DBSettings } from '../db/db';
 import { useScripture, TRANSLATIONS, type TranslationId } from '../components/ScriptureProvider';
@@ -9,6 +9,21 @@ export default function Settings() {
   const { mode, setMode } = useTheme();
   const { translationId, setTranslation } = useScripture();
   const [s, setS] = useState<DBSettings | null>(null);
+  const [updating, setUpdating] = useState(false);
+  const [updateAvailable, setUpdateAvailable] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setUpdateAvailable(true);
+    window.addEventListener('manna:update-available', handler);
+    return () => window.removeEventListener('manna:update-available', handler);
+  }, []);
+
+  const checkForUpdate = async () => {
+    setUpdating(true);
+    const fn = (window as unknown as { __mannaUpdate?: () => Promise<void> }).__mannaUpdate;
+    if (fn) await fn();
+    else location.reload();
+  };
 
   useEffect(() => { (async () => setS(await getSettings()))(); }, []);
 
@@ -130,6 +145,36 @@ export default function Settings() {
             </button>
           ))}
         </div>
+      </div>
+
+      <div className={`card space-y-3 ${updateAvailable ? 'border-emerald-300 dark:border-emerald-700/60' : ''}`}>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <div className="font-semibold text-ink-800 dark:text-ink-100 flex items-center gap-2">
+              <RefreshCw size={16} /> App version
+            </div>
+            <div className="text-xs text-ink-500 dark:text-ink-300/70 mt-1">
+              {updateAvailable
+                ? 'A new version is available. Tap below to install.'
+                : 'Manna updates automatically when you visit. Tap below to force a check now.'}
+            </div>
+          </div>
+        </div>
+        <button
+          onClick={checkForUpdate}
+          disabled={updating}
+          className={updateAvailable ? 'btn-primary w-full' : 'btn-outline w-full'}
+        >
+          {updating
+            ? <><Loader2 size={16} className="animate-spin" /> Updating…</>
+            : updateAvailable
+            ? <><RefreshCw size={16} /> Install update</>
+            : <><RefreshCw size={16} /> Check for updates</>
+          }
+        </button>
+        <p className="text-[11px] text-ink-500 dark:text-ink-300/70 italic">
+          This clears the offline cache and reloads with the latest version. You shouldn't need to uninstall the app.
+        </p>
       </div>
 
       <Link to="/how-to" className="card flex items-center justify-between gap-3 hover:shadow-glow transition no-underline">

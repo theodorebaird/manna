@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { X, Trophy, ArrowRight, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Trophy, ArrowRight, RotateCcw } from 'lucide-react';
 import { getLesson, computeUnlocks } from '../lib/lessons';
 import LessonRunner from '../components/LessonRunner';
 import { db, getSettings, type Settings } from '../db/db';
@@ -20,7 +20,12 @@ export default function Lesson() {
     (async () => setSettings(await getSettings()))();
   }, []);
 
-  if (!id) { navigate('/learn'); return null; }
+  // If no id in URL, navigate back to Learn (in an effect — never during render)
+  useEffect(() => {
+    if (!id) navigate('/learn', { replace: true });
+  }, [id, navigate]);
+
+  if (!id) return null;
   const found = getLesson(id);
   if (!found) {
     return (
@@ -51,9 +56,13 @@ export default function Lesson() {
 
   return (
     <div className="space-y-4">
-      <header className="flex items-center justify-between">
-        <button onClick={() => navigate('/learn')} className="btn-ghost"><X size={18} /></button>
-        <div className="text-sm font-medium text-ink-600 dark:text-ink-300">{unit.title} · {skill.title}</div>
+      <header className="flex items-center justify-between gap-2">
+        <button onClick={() => navigate('/learn')} className="btn-ghost text-sm">
+          <ArrowLeft size={16} /> Learn
+        </button>
+        <div className="text-xs font-medium text-ink-600 dark:text-ink-300 text-right truncate flex-1">
+          {unit.title} · {skill.title}
+        </div>
         <HeartsIndicator hearts={settings?.hearts ?? 0} />
       </header>
 

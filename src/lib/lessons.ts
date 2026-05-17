@@ -2,8 +2,16 @@ import lessonsData from '../data/lessons.json';
 import type { QuizQuestion } from './quiz';
 import { db } from '../db/db';
 
+export interface HistoricalContext {
+  timeframe?: string;
+  location?: string;
+  summary: string;
+  believed?: string;
+  sources?: string[];
+}
+
 export type Lesson =
-  | { id: string; type: 'read';     title: string; ref: string; reflectPrompt: string }
+  | { id: string; type: 'read';     title: string; ref: string; reflectPrompt: string; historicalContext?: HistoricalContext }
   | { id: string; type: 'quiz';     title: string; questions: QuizQuestion[] }
   | { id: string; type: 'memorize'; title: string; ref: string; text: string }
   | { id: string; type: 'history';  title: string; cardId: string; checkQuestion: QuizQuestion }
