@@ -9,6 +9,8 @@ export interface Settings {
   translationId: 'kjv' | 'asv' | 'bsb';
   memorizeMode?: 'fill-blanks' | 'first-letters' | 'type-full' | 'read-along';
   bibleOrder?: 'canonical' | 'chronological';
+  voiceURI?: string | null;
+  speechRate?: number;
   hearts: number;
   heartsRegenAt: number;     // epoch ms
   lastReadRef: string | null;
@@ -154,6 +156,8 @@ export async function getSettings(): Promise<Settings> {
     translationId: 'kjv',
     memorizeMode: 'fill-blanks',
     bibleOrder: 'canonical',
+    voiceURI: null,
+    speechRate: 1,
     hearts: HEART_MAX,
     heartsRegenAt: Date.now(),
     lastReadRef: null

@@ -2,8 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   ChevronLeft, ChevronRight, BookOpen, Bookmark as BookmarkIcon, Brain,
-  Sparkles, Highlighter, ZoomIn, ZoomOut, X, Save, Pencil, BookText
+  Sparkles, Highlighter, ZoomIn, ZoomOut, X, Save, Pencil, BookText,
+  Volume2, Pause, Play as PlayIcon, Square
 } from 'lucide-react';
+import { Speaker, isSupported as ttsSupported } from '../lib/tts';
 import { useScripture, TRANSLATIONS } from '../components/ScriptureProvider';
 import { bookById, BOOKS, CHRONOLOGICAL_IDS, CHRONOLOGICAL_ORDER, type BookInfo, type Verse } from '../lib/bible';
 import BookPicker from '../components/BookPicker';
@@ -75,6 +77,9 @@ export default function Read() {
   const [zoomDelta, setZoomDelta] = useState(0);
   const [studyVerse, setStudyVerse] = useState<{ verse: Verse; ref: string } | null>(null);
   const [noteVerse, setNoteVerse] = useState<{ verse: Verse; ref: string; existingNote: string } | null>(null);
+  const [audioState, setAudioState] = useState<'stopped' | 'playing' | 'paused'>('stopped');
+  const [speakingVerse, setSpeakingVerse] = useState<number | null>(null);
+  const speakerRef = useMemo(() => new Speaker(), []);
 
   const bookId = params.book ?? 'john';
   const chapter = Math.max(1, parseInt(params.chapter ?? '1', 10));
@@ -160,6 +165,34 @@ export default function Read() {
     setSettings(next);
   };
 
+  // Stop audio whenever the chapter changes or component unmounts.
+  useEffect(() => {
+    return () => {
+      speakerRef.stop();
+      setAudioState('stopped');
+      setSpeakingVerse(null);
+    };
+  }, [book.id, chapter, speakerRef]);
+
+  const playAudio = () => {
+    if (!ttsSupported() || verses.length === 0) return;
+    const chunks = verses.map(v => ({ text: `Verse ${v.v}. ${v.t}`, meta: { verse: v.v } }));
+    setAudioState('playing');
+    speakerRef.speak(chunks, {
+      voiceURI: settings?.voiceURI ?? null,
+      rate: settings?.speechRate ?? 1,
+      onChunkStart: chunk => {
+        const v = chunk.meta?.verse;
+        if (typeof v === 'number') setSpeakingVerse(v);
+      },
+      onEnd: () => { setAudioState('stopped'); setSpeakingVerse(null); },
+      onError: () => { setAudioState('stopped'); setSpeakingVerse(null); }
+    });
+  };
+  const pauseAudio = () => { speakerRef.pause(); setAudioState('paused'); };
+  const resumeAudio = () => { speakerRef.resume(); setAudioState('playing'); };
+  const stopAudio = () => { speakerRef.stop(); setAudioState('stopped'); setSpeakingVerse(null); };
+
   const flash = (msg: string) => { setToast(msg); window.setTimeout(() => setToast(null), 1800); };
 
   const bookmark = async (v: Verse, openNote = false) => {
@@ -231,6 +264,26 @@ export default function Read() {
             {book.name} {chapter}
           </button>
           <div className="flex items-center gap-1">
+            {ttsSupported() && (
+              audioState === 'stopped' ? (
+                <button onClick={playAudio} className="w-9 h-9 rounded-full border border-gold-200 dark:border-ink-600 text-ink-700 dark:text-ink-200 flex items-center justify-center" title="Listen to this chapter">
+                  <Volume2 size={16} />
+                </button>
+              ) : audioState === 'playing' ? (
+                <button onClick={pauseAudio} className="w-9 h-9 rounded-full bg-gold-500 text-white flex items-center justify-center" title="Pause">
+                  <Pause size={16} />
+                </button>
+              ) : (
+                <button onClick={resumeAudio} className="w-9 h-9 rounded-full bg-gold-500 text-white flex items-center justify-center" title="Resume">
+                  <PlayIcon size={16} />
+                </button>
+              )
+            )}
+            {audioState !== 'stopped' && (
+              <button onClick={stopAudio} className="w-9 h-9 rounded-full border border-gold-200 dark:border-ink-600 text-ink-700 dark:text-ink-200 flex items-center justify-center" title="Stop">
+                <Square size={14} />
+              </button>
+            )}
             <button onClick={() => setZoomDelta(z => Math.max(-2, z - 1))} className="w-9 h-9 rounded-full border border-gold-200 dark:border-ink-600 text-ink-700 dark:text-ink-200 flex items-center justify-center" title="Smaller">
               <ZoomOut size={16} />
             </button>
@@ -257,6 +310,7 @@ export default function Read() {
           scale={effectiveScale}
           highlightMap={highlightMap}
           selectedVerse={selectedVerse?.v ?? null}
+          speakingVerse={speakingVerse}
           onVerseClick={v => setSelectedVerse(prev => (prev?.v === v.v ? null : v))}
         />
       </div>
@@ -363,11 +417,12 @@ export default function Read() {
   );
 }
 
-function ChapterRenderer({ verses, scale, highlightMap, selectedVerse, onVerseClick }: {
+function ChapterRenderer({ verses, scale, highlightMap, selectedVerse, speakingVerse, onVerseClick }: {
   verses: Verse[];
   scale: number;
   highlightMap: Map<number, HL>;
   selectedVerse: number | null;
+  speakingVerse: number | null;
   onVerseClick: (v: Verse) => void;
 }) {
   if (verses.length === 0) {
@@ -381,10 +436,11 @@ function ChapterRenderer({ verses, scale, highlightMap, selectedVerse, onVerseCl
     >
       {verses.map(v => {
         const isSelected = selectedVerse === v.v;
+        const isSpeaking = speakingVerse === v.v;
         const hl = highlightMap.get(v.v);
-        const bg = hl
-          ? (isDark ? HL_BG_DARK[hl] : HL_BG_LIGHT[hl])
-          : undefined;
+        const bg = isSpeaking
+          ? (isDark ? 'rgba(217, 119, 6, 0.35)' : 'rgba(252, 211, 77, 0.55)')
+          : (hl ? (isDark ? HL_BG_DARK[hl] : HL_BG_LIGHT[hl]) : undefined);
         return (
           <span
             key={v.v}
@@ -392,7 +448,7 @@ function ChapterRenderer({ verses, scale, highlightMap, selectedVerse, onVerseCl
             onClick={() => onVerseClick(v)}
             className={`inline cursor-pointer transition rounded px-0.5 ${
               isSelected ? 'ring-2 ring-gold-500 ring-offset-1 ring-offset-transparent' : ''
-            }`}
+            } ${isSpeaking ? 'ring-1 ring-gold-400' : ''}`}
             style={{ backgroundColor: bg }}
           >
             <sup className="text-xs font-sans font-semibold text-gold-600 dark:text-gold-400 mr-1 select-none">{v.v}</sup>

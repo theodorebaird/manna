@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Sun, Moon, Monitor, Type, Trash2, Info, HelpCircle, ChevronRight, BookOpen, RefreshCw, Loader2, CheckCircle2, XCircle, X as XIcon } from 'lucide-react';
+import { Sun, Moon, Monitor, Type, Trash2, Info, HelpCircle, ChevronRight, BookOpen, RefreshCw, Loader2, CheckCircle2, XCircle, X as XIcon, Volume2, Play } from 'lucide-react';
+import { Speaker, getVoices, isSupported as ttsSupported } from '../lib/tts';
 import { useTheme, type ThemeMode } from '../components/ThemeProvider';
 import { db, getSettings, updateSettings, type Settings as DBSettings } from '../db/db';
 import { useScripture, TRANSLATIONS, type TranslationId } from '../components/ScriptureProvider';
@@ -12,6 +13,18 @@ export default function Settings() {
   const [updating, setUpdating] = useState(false);
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [updateResult, setUpdateResult] = useState<'up-to-date' | 'error' | null>(null);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [voicesLoading, setVoicesLoading] = useState(true);
+
+  useEffect(() => {
+    if (!ttsSupported()) { setVoicesLoading(false); return; }
+    (async () => {
+      const v = await getVoices();
+      const englishVoices = v.filter(x => x.lang.toLowerCase().startsWith('en'));
+      setVoices(englishVoices.length ? englishVoices : v);
+      setVoicesLoading(false);
+    })();
+  }, []);
 
   useEffect(() => {
     const handler = () => setUpdateAvailable(true);
@@ -98,6 +111,15 @@ export default function Settings() {
           All three translations are public domain and work offline. NASB, NIV, NKJV, and ESV aren't available — they require paid publisher licenses.
         </p>
       </div>
+
+      <VoiceCard
+        voices={voices}
+        loading={voicesLoading}
+        currentVoiceURI={s.voiceURI ?? null}
+        currentRate={s.speechRate ?? 1}
+        onPickVoice={async uri => { const next = await updateSettings({ voiceURI: uri }); setS(next); }}
+        onChangeRate={async r => { const next = await updateSettings({ speechRate: r }); setS(next); }}
+      />
 
       <div className="card space-y-3">
         <div className="section-label">Appearance</div>
@@ -214,6 +236,140 @@ export default function Settings() {
       {updateResult && (
         <UpdateResultModal result={updateResult} onClose={() => setUpdateResult(null)} />
       )}
+    </div>
+  );
+}
+
+function VoiceCard({
+  voices, loading, currentVoiceURI, currentRate, onPickVoice, onChangeRate
+}: {
+  voices: SpeechSynthesisVoice[];
+  loading: boolean;
+  currentVoiceURI: string | null;
+  currentRate: number;
+  onPickVoice: (uri: string | null) => void;
+  onChangeRate: (r: number) => void;
+}) {
+  const [testing, setTesting] = useState<string | null>(null);
+  const testSpeaker = useState(() => new Speaker())[0];
+
+  if (!ttsSupported()) {
+    return (
+      <div className="card space-y-2">
+        <div className="section-label flex items-center gap-1.5"><Volume2 size={14} /> Read aloud</div>
+        <p className="text-sm text-ink-600 dark:text-ink-300">
+          Your browser doesn't support text-to-speech. Try Chrome, Safari, or Edge.
+        </p>
+      </div>
+    );
+  }
+
+  const test = (voiceURI: string | null) => {
+    testSpeaker.stop();
+    setTesting(voiceURI ?? 'default');
+    testSpeaker.speak(
+      [{ text: 'For God so loved the world, that he gave his only begotten Son.' }],
+      {
+        voiceURI,
+        rate: currentRate,
+        onEnd: () => setTesting(null),
+        onError: () => setTesting(null)
+      }
+    );
+  };
+
+  const rates: { label: string; value: number }[] = [
+    { label: 'Slow',   value: 0.75 },
+    { label: 'Normal', value: 1.0 },
+    { label: 'Fast',   value: 1.25 },
+    { label: 'Faster', value: 1.5 }
+  ];
+
+  return (
+    <div className="card space-y-4">
+      <div className="section-label flex items-center gap-1.5"><Volume2 size={14} /> Read aloud — voice</div>
+
+      <div className="space-y-2">
+        <div className="text-xs text-ink-500 dark:text-ink-300/70">Speed</div>
+        <div className="grid grid-cols-4 gap-2">
+          {rates.map(r => (
+            <button
+              key={r.value}
+              onClick={() => onChangeRate(r.value)}
+              className={`py-2 rounded-xl border text-xs font-medium transition ${
+                Math.abs(currentRate - r.value) < 0.01
+                  ? 'border-gold-500 bg-gold-50 dark:bg-ink-700 text-gold-700 dark:text-gold-300'
+                  : 'border-gold-100 dark:border-ink-700 text-ink-700 dark:text-ink-200'
+              }`}
+            >
+              {r.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <div className="text-xs text-ink-500 dark:text-ink-300/70">Voice</div>
+        {loading && <div className="text-sm text-ink-500 italic">Loading voices…</div>}
+        {!loading && voices.length === 0 && (
+          <div className="text-sm text-ink-500 italic">No voices found on this device.</div>
+        )}
+        <div className="space-y-1.5 max-h-80 overflow-y-auto pr-1">
+          <button
+            onClick={() => onPickVoice(null)}
+            className={`w-full text-left px-3 py-2 rounded-xl border transition flex items-center justify-between gap-2 ${
+              !currentVoiceURI
+                ? 'border-gold-500 bg-gold-50 dark:bg-ink-700'
+                : 'border-gold-100 dark:border-ink-700 hover:bg-gold-50 dark:hover:bg-ink-700'
+            }`}
+          >
+            <div className="min-w-0">
+              <div className="font-medium text-sm text-ink-800 dark:text-ink-100">System default</div>
+              <div className="text-[11px] text-ink-500 dark:text-ink-300/70">Whatever voice your device chooses</div>
+            </div>
+            <button
+              onClick={e => { e.stopPropagation(); test(null); }}
+              className="text-gold-700 dark:text-gold-400 px-2 py-1 rounded hover:bg-gold-100 dark:hover:bg-ink-600 flex-shrink-0"
+              title="Test"
+            >
+              <Play size={14} className={testing === 'default' ? 'animate-pulse' : ''} />
+            </button>
+          </button>
+          {voices.map(v => {
+            const active = currentVoiceURI === v.voiceURI;
+            return (
+              <button
+                key={v.voiceURI}
+                onClick={() => onPickVoice(v.voiceURI)}
+                className={`w-full text-left px-3 py-2 rounded-xl border transition flex items-center justify-between gap-2 ${
+                  active
+                    ? 'border-gold-500 bg-gold-50 dark:bg-ink-700'
+                    : 'border-gold-100 dark:border-ink-700 hover:bg-gold-50 dark:hover:bg-ink-700'
+                }`}
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="font-medium text-sm text-ink-800 dark:text-ink-100 truncate">
+                    {v.name}
+                  </div>
+                  <div className="text-[11px] text-ink-500 dark:text-ink-300/70">
+                    {v.lang}{v.localService ? ' · offline' : ' · online'}
+                  </div>
+                </div>
+                <button
+                  onClick={e => { e.stopPropagation(); test(v.voiceURI); }}
+                  className="text-gold-700 dark:text-gold-400 px-2 py-1 rounded hover:bg-gold-100 dark:hover:bg-ink-600 flex-shrink-0"
+                  title="Test"
+                >
+                  <Play size={14} className={testing === v.voiceURI ? 'animate-pulse' : ''} />
+                </button>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <p className="text-[11px] text-ink-500 dark:text-ink-300/70 italic">
+        Voices come from your device. iPhones use Siri voices; Android uses Google voices. On the Read page, tap the speaker icon to listen to a chapter.
+      </p>
     </div>
   );
 }
