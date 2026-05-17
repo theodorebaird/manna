@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Sun, Moon, Monitor, Type, Trash2, Info, HelpCircle, ChevronRight, BookOpen, RefreshCw, Loader2 } from 'lucide-react';
+import { Sun, Moon, Monitor, Type, Trash2, Info, HelpCircle, ChevronRight, BookOpen, RefreshCw, Loader2, CheckCircle2, XCircle, X as XIcon } from 'lucide-react';
 import { useTheme, type ThemeMode } from '../components/ThemeProvider';
 import { db, getSettings, updateSettings, type Settings as DBSettings } from '../db/db';
 import { useScripture, TRANSLATIONS, type TranslationId } from '../components/ScriptureProvider';
@@ -11,6 +11,7 @@ export default function Settings() {
   const [s, setS] = useState<DBSettings | null>(null);
   const [updating, setUpdating] = useState(false);
   const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [updateResult, setUpdateResult] = useState<'up-to-date' | 'error' | null>(null);
 
   useEffect(() => {
     const handler = () => setUpdateAvailable(true);
@@ -20,9 +21,19 @@ export default function Settings() {
 
   const checkForUpdate = async () => {
     setUpdating(true);
-    const fn = (window as unknown as { __mannaUpdate?: () => Promise<void> }).__mannaUpdate;
-    if (fn) await fn();
-    else location.reload();
+    setUpdateResult(null);
+    const fn = (window as unknown as { __mannaUpdate?: () => Promise<'updated' | 'up-to-date' | 'error'> }).__mannaUpdate;
+    if (!fn) {
+      location.reload();
+      return;
+    }
+    const result = await fn();
+    setUpdating(false);
+    if (result === 'updated') {
+      // Page is reloading; nothing more to do
+      return;
+    }
+    setUpdateResult(result);
   };
 
   useEffect(() => { (async () => setS(await getSettings()))(); }, []);
@@ -199,6 +210,43 @@ export default function Settings() {
       <button onClick={clearAll} className="w-full py-3 rounded-xl border border-rose-300 text-rose-700 dark:text-rose-300 dark:border-rose-700 hover:bg-rose-50 dark:hover:bg-rose-900/30 font-medium flex items-center justify-center gap-2">
         <Trash2 size={16} /> Erase all data
       </button>
+
+      {updateResult && (
+        <UpdateResultModal result={updateResult} onClose={() => setUpdateResult(null)} />
+      )}
+    </div>
+  );
+}
+
+function UpdateResultModal({ result, onClose }: { result: 'up-to-date' | 'error'; onClose: () => void }) {
+  const isOk = result === 'up-to-date';
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-ink-900/60 backdrop-blur-sm animate-fade-in" onClick={onClose}>
+      <div
+        className="w-full max-w-md bg-white dark:bg-ink-800 rounded-t-2xl sm:rounded-2xl border border-gold-200 dark:border-ink-700 shadow-soft p-5 space-y-4 animate-slide-up text-center"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between">
+          <span className="text-xs uppercase tracking-wider text-ink-500 dark:text-ink-300/70 font-semibold">App update</span>
+          <button onClick={onClose} className="text-ink-500 hover:text-ink-800 dark:hover:text-ink-100"><XIcon size={18} /></button>
+        </div>
+        <div className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center ${
+          isOk
+            ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400'
+            : 'bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400'
+        }`}>
+          {isOk ? <CheckCircle2 size={32} /> : <XCircle size={32} />}
+        </div>
+        <h3 className="font-serif text-xl text-ink-800 dark:text-ink-100">
+          {isOk ? "You're on the latest version" : "Couldn't check for updates"}
+        </h3>
+        <p className="text-sm text-ink-600 dark:text-ink-300">
+          {isOk
+            ? 'Manna is up to date. Nothing to install.'
+            : "We couldn't reach the server to check. Try again in a moment, or check your connection."}
+        </p>
+        <button onClick={onClose} className="btn-primary w-full">Close</button>
+      </div>
     </div>
   );
 }

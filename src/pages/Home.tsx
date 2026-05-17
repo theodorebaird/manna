@@ -54,9 +54,11 @@ export default function Home() {
   }, []);
 
   const installUpdate = async () => {
-    const fn = (window as unknown as { __mannaUpdate?: () => Promise<void> }).__mannaUpdate;
-    if (fn) await fn();
-    else location.reload();
+    const fn = (window as unknown as { __mannaUpdate?: () => Promise<'updated' | 'up-to-date' | 'error'> }).__mannaUpdate;
+    if (!fn) { location.reload(); return; }
+    const result = await fn();
+    // If updated, page is reloading. Otherwise the banner already shouldn't have been showing — dismiss it.
+    if (result !== 'updated') setUpdateAvailable(false);
   };
 
   if (!settings) return <div className="card text-center text-ink-500 py-8">Loading…</div>;

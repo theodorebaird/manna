@@ -17,35 +17,63 @@ registerSW({
   }
 });
 
-(window as unknown as { __mannaUpdate?: () => Promise<void> }).__mannaUpdate = async () => {
-  // Hard cap the whole operation at 3 seconds; we always navigate to root
-  // afterward, so a hang in any subsystem can't block the user forever.
-  const timeout = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
-  const clearCaches = async () => {
-    try {
-      if ('caches' in window) {
-        const names = await caches.keys();
-        await Promise.all(names.map(n => caches.delete(n)));
-      }
-    } catch {}
-  };
-  const unregisterSW = async () => {
-    try {
-      if ('serviceWorker' in navigator) {
-        const regs = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(regs.map(r => r.unregister()));
-      }
-    } catch {}
-  };
+/**
+ * Get the content-hash of the currently-loaded JS bundle.
+ * Vite names assets like /assets/index-{HASH}.js — comparing this hash
+ * to the one in the live server's index.html tells us if a new build exists.
+ * Returns null in dev mode (no bundled assets).
+ */
+function getCurrentBundleHash(): string | null {
+  const scripts = [...document.querySelectorAll('script[src*="/assets/index-"]')];
+  if (scripts.length === 0) return null;
+  const src = scripts[0].getAttribute('src') ?? '';
+  return src.match(/index-([A-Za-z0-9_-]+)\.js/)?.[1] ?? null;
+}
 
-  // Race the actual work against a 3-second timeout so we never hang.
-  await Promise.race([
-    Promise.all([clearCaches(), unregisterSW()]),
-    timeout(3000)
-  ]);
+async function getServerBundleHash(): Promise<string | null> {
+  const resp = await fetch('/?_check=' + Date.now(), { cache: 'no-store' });
+  if (!resp.ok) throw new Error('HTTP ' + resp.status);
+  const text = await resp.text();
+  return text.match(/\/assets\/index-([A-Za-z0-9_-]+)\.js/)?.[1] ?? null;
+}
 
-  // Cache-bust query string forces the browser to refetch index.html fresh.
+type UpdateResult = 'updated' | 'up-to-date' | 'error';
+
+(window as unknown as { __mannaUpdate?: () => Promise<UpdateResult> }).__mannaUpdate = async (): Promise<UpdateResult> => {
+  const currentHash = getCurrentBundleHash();
+  if (!currentHash) {
+    // Dev mode — no bundled assets to compare. Treat as up-to-date.
+    return 'up-to-date';
+  }
+  let serverHash: string | null;
+  try {
+    serverHash = await Promise.race([
+      getServerBundleHash(),
+      new Promise<string | null>((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+    ]);
+  } catch {
+    return 'error';
+  }
+  if (!serverHash) {
+    // Couldn't determine — be safe and don't reload
+    return 'up-to-date';
+  }
+  if (serverHash === currentHash) {
+    return 'up-to-date';
+  }
+  // New version exists — clear caches and reload
+  try {
+    if ('caches' in window) {
+      const names = await caches.keys();
+      await Promise.all(names.map(n => caches.delete(n)));
+    }
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.unregister()));
+    }
+  } catch {}
   location.replace('/?u=' + Date.now());
+  return 'updated';
 };
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
