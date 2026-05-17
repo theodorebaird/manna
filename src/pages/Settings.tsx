@@ -20,8 +20,10 @@ export default function Settings() {
     if (!ttsSupported()) { setVoicesLoading(false); return; }
     (async () => {
       const v = await getVoices();
-      // Show ALL voices (any language). User can filter by gender / accent in the picker.
-      setVoices(v);
+      // English voices only — non-English voices mispronounce English text
+      // because they're trained on other languages' phonemes.
+      const englishOnly = v.filter(x => x.lang.toLowerCase().startsWith('en'));
+      setVoices(englishOnly.length ? englishOnly : v);
       setVoicesLoading(false);
     })();
   }, []);
@@ -439,13 +441,13 @@ function VoiceCard({
       </div>
 
       <div className="card-tight text-[11px] text-ink-600 dark:text-ink-300 italic space-y-1 bg-gold-50/60 dark:bg-ink-700/40">
-        <div className="font-semibold not-italic text-ink-700 dark:text-ink-200">Want more accents?</div>
+        <div className="font-semibold not-italic text-ink-700 dark:text-ink-200">Want more English accents?</div>
         <div>
-          Voices come from your device. To add more (Russian, Irish, Spanish, etc.):
+          Your device has built-in English voices for American, British, Irish, Australian, Indian, etc. To add more variants:
         </div>
-        <div><strong>iPhone/iPad:</strong> Settings → Accessibility → Spoken Content → Voices → tap a language → download.</div>
-        <div><strong>Android:</strong> Settings → System → Languages → Text-to-speech → install language packs.</div>
-        <div><strong>Mac/Windows:</strong> System Settings → Accessibility → Spoken Content (Mac) or Time & Language → Speech (Windows).</div>
+        <div><strong>iPhone/iPad:</strong> Settings → Accessibility → Spoken Content → Voices → English → download more accents.</div>
+        <div><strong>Android:</strong> Settings → System → Languages → Text-to-speech → install additional English voices.</div>
+        <div><strong>Mac/Windows:</strong> System Settings → Accessibility → Spoken Content (Mac) or Time & Language → Speech (Windows) → English voices.</div>
       </div>
     </div>
   );
